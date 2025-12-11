@@ -1,7 +1,8 @@
 NAME = rpg_game
 
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror -Ihdrs
+CFLAGS = -Wall -Wextra -Werror -Ihdrs $(shell mysql_config --cflags)
+LDFLAGS = $(shell mysql_config --libs)
 
 SRC_DIR = srcs
 OBJ_DIR = obj
@@ -14,7 +15,7 @@ OBJ = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC))
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJ) -o $(NAME) $(LDFLAGS)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -26,4 +27,4 @@ clean:
 	rm -rf $(OBJ_DIR)
 	rm -f $(NAME)
 
-.PHONY: all clean 
+.PHONY: all clean

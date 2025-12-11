@@ -1,13 +1,12 @@
 #ifndef STRUCTS_HASH_H
 #define STRUCTS_HASH_H
 
-#define TABLE_SIZE 167
-
 #include "structs_adv.h"
 
 typedef struct _entry {
-    int adv_id;
-    adv adventure;
+    int key;
+    adv adventurer;
+    struct entry *next;
 } entry;
 
 typedef struct _hashtable {

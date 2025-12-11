@@ -2,73 +2,81 @@
 #define STRUCTS_ADV_H
 
 typedef struct _helmet_stats {
+    char name[30];
     int lvl;
     double exp;
     int defense;
 } helmet_stats;
 
 typedef struct _chestplate_stats {
+    char name[30];
     int lvl;
     double exp;
     int defense;
 } chestplate_stats;
 
 typedef struct _armlet_stats {
+    char name[30];
     int lvl;
     double exp;
     int defense;
 } armlet_stats;
 
 typedef struct _boots_stats {
+    char name[30];
     int lvl;
     double exp;
     int defense;
 } boots_stats;
 
 typedef struct _weapon_stats {
+    char name[30];
     int lvl;
     double exp;
     int physical_dmg;
     int magic_dmg;
-    int id_passive;
+    int passive_id;
 } weapon_stats;
 
-typedef struct _adv_stats {
-    char* name;
-    char* class;
+typedef struct _stats {
+    char name[30];
+    char class[30];
     int lvl;
     double exp;
     int max_hp;
     int max_mana;
     int physical_dmg;
     int magic_dmg;
-} adv_stats;
+} stats;
 
-typedef struct _adv_moves {
-    int id_move1;
-    int id_move2;
-    int id_move3;
-    int id_move4;
-} adv_moves;
+typedef struct _moves {
+    int move1_id;
+    int move2_id;
+    int move3_id;
+    int move4_id;
+} moves;
 
-typedef struct _adv_equipment {
-    int id_helmet;
+typedef struct _equipment {
+    int helmet_id;
+    int chestplate_id;
+    int armlet_id;
+    int boots_id;
+    int weapon_id;
     helmet_stats h_s;
-    int id_chestplate;
     chestplate_stats c_s;
-    int id_armlet;
     armlet_stats a_s;
-    int id_boots;
     boots_stats b_s;
-    int id_weapon;
     weapon_stats w_s;
-} adv_equipment;
+} equipment;
 
 typedef struct _adv {
     int adv_id;
-    adv_stats stats;
-    adv_moves moves;
-    adv_equipment equipment;
+    int stats_id;
+    int moves_id;
+    int equipment_id;
+    stats* stats;
+    moves* moves;
+    equipment* equipment;
 } adv;
 
 #endif

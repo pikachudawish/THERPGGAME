@@ -7,6 +7,7 @@
 int main(int argc, char* argv[]) {
     hashtable* ht = create_ht();
 
+
     printf("\n#-#-#-#-# THE RPG GAME #-#-#-#-#\n\n");
     printf("Greetings Adventure, welcome to the amazing world of *insert name*! ");
 
