@@ -28,11 +28,11 @@ unsigned int hash_int(int key) {
     return key % TABLE_SIZE;
 }
 
-void ht_insert(hashtable *ht, int key, adv new_adv) {
-    unsigned int hash = hash_int(key);
+void ht_insert(hashtable *ht, adv new_adv) {
+    unsigned int hash = hash_int(new_adv.adv_id);
 
     entry *new_entry = (entry*)malloc(sizeof(entry));
-    new_entry->key = key;
+    new_entry->key = new_adv.adv_id;
     new_entry->adventurer = new_adv;
 
     new_entry->next = ht->buckets[hash];

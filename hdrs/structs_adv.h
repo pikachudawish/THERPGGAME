@@ -57,11 +57,6 @@ typedef struct _moves {
 } moves;
 
 typedef struct _equipment {
-    int helmet_id;
-    int chestplate_id;
-    int armlet_id;
-    int boots_id;
-    int weapon_id;
     helmet_stats h_s;
     chestplate_stats c_s;
     armlet_stats a_s;
@@ -71,9 +66,6 @@ typedef struct _equipment {
 
 typedef struct _adv {
     int adv_id;
-    int stats_id;
-    int moves_id;
-    int equipment_id;
     stats* stats;
     moves* moves;
     equipment* equipment;
