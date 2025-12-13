@@ -35,7 +35,6 @@ typedef struct _weapon_stats {
     double exp;
     int physical_dmg;
     int magic_dmg;
-    int passive_id;
 } weapon_stats;
 
 typedef struct _stats {
@@ -57,11 +56,11 @@ typedef struct _moves {
 } moves;
 
 typedef struct _equipment {
-    helmet_stats h_s;
-    chestplate_stats c_s;
-    armlet_stats a_s;
-    boots_stats b_s;
-    weapon_stats w_s;
+    helmet_stats* h_s;
+    chestplate_stats* c_s;
+    armlet_stats* a_s;
+    boots_stats* b_s;
+    weapon_stats* w_s;
 } equipment;
 
 typedef struct _adv {

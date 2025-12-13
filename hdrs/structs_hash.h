@@ -5,7 +5,7 @@
 
 typedef struct _entry {
     int key;
-    adv adventurer;
+    adv* adventurer;
     struct entry *next;
 } entry;
 

@@ -11,12 +11,26 @@ void freeht(hashtable* ht) {
         while(aux) {
             entry* tmp = aux;
             aux = aux->next;
-            free(tmp->adventurer.stats.class);
-            free(tmp->adventurer.stats.name);
+            free_adv(aux->adventurer);
             free(tmp);
         }
     }
     free(ht);
+
+    return;
+}
+
+void free_adv(adv* a) {
+    free(a->equipment->h_s);
+    free(a->equipment->c_s);
+    free(a->equipment->a_s);
+    free(a->equipment->b_s);
+    free(a->equipment->w_s);
+
+    free(a->equipment);
+    free(a->stats);
+    free(a->moves);
+    free(a);
 
     return;
 }
