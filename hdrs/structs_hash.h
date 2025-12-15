@@ -6,7 +6,7 @@
 typedef struct _entry {
     int key;
     adv* adventurer;
-    struct entry *next;
+    struct _entry *next;
 } entry;
 
 typedef struct _hashtable {

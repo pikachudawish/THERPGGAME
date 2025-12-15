@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <mysql/mysql.h>
 
 #include "hashfuncs.h"
+#include "dbauxfuncs.h"
 
 #define TABLE_SIZE 167
-#define SQL_QUERY "SELECT a.id, s.name, s.class, s.lvl, s.exp, s.max_hp, s.max_mana, s.pd, s.md, m.move1, m.move2, m.move3, m.move4, h.h_name, h.h_lvl, h.h_exp, h.h_defense, c.c_name, c.c_lvl, c.c_exp, c.c_defense, a2.a_name, a2.a_lvl, a2.a_exp, a2.a_defense, b.b_name, b.b_lvl, b.b_exp, b.b_defense, w.w_name, w.w_lvl, w.w_exp, w.w_pd, w.w_md FROM adv a INNER JOIN adv_stats s ON a.id_stats = s.id INNER JOIN adv_moves m ON a.id_moves = m.id INNER JOIN adv_equipment e ON a.id_equipment = e.id INNER JOIN helmets h ON e.helmet_id = h.id INNER JOIN chestplates c ON e.chestplate_id  = c.id INNER JOIN armlets a2 ON e.armlet_id = a2.id INNER JOIN boots b ON e.boots_id = b.id INNER JOIN weapons w ON e.weapon_id = w.id;"
+#define SELECT "SELECT a.id, s.name, s.class, s.lvl, s.exp, s.max_hp, s.max_mana, s.pd, s.md, m.move1, m.move2, m.move3, m.move4, h.h_name, h.h_lvl, h.h_exp, h.h_defense, c.c_name, c.c_lvl, c.c_exp, c.c_defense, a2.a_name, a2.a_lvl, a2.a_exp, a2.a_defense, b.b_name, b.b_lvl, b.b_exp, b.b_defense, w.w_name, w.w_lvl, w.w_exp, w.w_pd, w.w_md FROM adv a INNER JOIN adv_stats s ON a.id_stats = s.id INNER JOIN adv_moves m ON a.id_moves = m.id INNER JOIN adv_equipment e ON a.id_equipment = e.id INNER JOIN helmets h ON e.helmet_id = h.id INNER JOIN chestplates c ON e.chestplate_id  = c.id INNER JOIN armlets a2 ON e.armlet_id = a2.id INNER JOIN boots b ON e.boots_id = b.id INNER JOIN weapons w ON e.weapon_id = w.id;"
 
 int db_to_ht_init_conn(MYSQL* conn, hashtable* ht) {
     if(mysql_real_connect(conn, "100.82.64.91", "rpggameadm", "Ru@25092006", "rpggame", 3306, NULL, 0) == NULL) return 0;
@@ -52,14 +54,19 @@ int db_to_ht_init_conn(MYSQL* conn, hashtable* ht) {
     aux->equipment->w_s = (weapon_stats*)malloc(sizeof(weapon_stats));
     if(!aux->equipment->w_s) {
         free(aux->equipment->b_s); free(aux->equipment->a_s); free(aux->equipment->c_s); free(aux->equipment->h_s); 
-        free(aux->equipment); free(aux->moves); free(aux->stats); free(aux);
+        free(aux->equipment); free(aux->moves); free(aux->stats); free(aux); 
         return 0;
     }
 
 
     MYSQL_STMT* stmt_adv = mysql_stmt_init(conn);
-    if(mysql_stmt_prepare(stmt_adv, SQL_QUERY, strlen(SQL_QUERY)) != 0) return 0;
-    
+    if(mysql_stmt_prepare(stmt_adv, SELECT, strlen(SELECT)) != 0) {
+        free(aux->equipment->b_s); free(aux->equipment->a_s); free(aux->equipment->c_s); free(aux->equipment->h_s); 
+        free(aux->equipment); free(aux->moves); free(aux->stats); free(aux);
+        mysql_stmt_close(stmt_adv);
+        return 0;
+    }
+
     MYSQL_BIND res_adv[34];
     memset(res_adv, 0, sizeof(res_adv));
     res_adv[0].buffer_type = MYSQL_TYPE_LONG;
@@ -163,6 +170,54 @@ int db_to_ht_init_conn(MYSQL* conn, hashtable* ht) {
     free(aux->moves);
     free(aux->stats);
     free(aux);
+
+    return 1;
+}
+
+int use_db(MYSQL* conn, adv* adventurer) {
+    MYSQL_STMT* stmt = mysql_stmt_init(conn);
+    if(mysql_stmt_prepare(stmt, "SELECT 1 FROM adv WHERE id = ?", strlen("SELECT 1 FROM adv WHERE id = ?")) != 0) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+
+    int id = adventurer->adv_id;
+    MYSQL_BIND b[1]; 
+    memset(b, 0, sizeof(b));
+    b[0].buffer_type = MYSQL_TYPE_LONG;
+    b[0].buffer = &id;
+
+    mysql_stmt_bind_param(stmt, b);
+    mysql_stmt_execute(stmt);
+    mysql_stmt_store_result(stmt);
+
+    int insorupd = mysql_stmt_fetch(stmt);
+    ins_upd_db(conn, adventurer, insorupd);
+
+    mysql_stmt_free_result(stmt);
+    mysql_stmt_close(stmt);
+    
+
+    return 1;
+}
+
+int ins_upd_db(MYSQL* conn, adv* adventurer, int insorupd) {
+    mysql_autocommit(conn, 0);
+
+    switch(insorupd) {
+        case 0:
+            
+            break;
+
+        default:
+            break;
+    }
+
+    mysql_autocommit(conn, 1);
+    return 1;
+}
+
+int rmv_db(MYSQL* conn, int adv_id) {
 
     return 1;
 }

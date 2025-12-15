@@ -5,21 +5,6 @@
 
 #define TABLE_SIZE 167
 
-void freeht(hashtable* ht) {
-    for(int s = 0; s < TABLE_SIZE; s++) {
-        entry* aux = ht->buckets[s];
-        while(aux) {
-            entry* tmp = aux;
-            aux = aux->next;
-            free_adv(aux->adventurer);
-            free(tmp);
-        }
-    }
-    free(ht);
-
-    return;
-}
-
 void free_adv(adv* a) {
     free(a->equipment->h_s);
     free(a->equipment->c_s);
@@ -34,4 +19,23 @@ void free_adv(adv* a) {
 
     return;
 }
+
+void freeht(hashtable* ht) {
+    for(int s = 0; s < TABLE_SIZE; s++) {
+        entry* aux = ht->buckets[s];
+        while(aux) {
+            entry* tmp = aux;
+            aux = aux->next;
+            free_adv(tmp->adventurer);
+            free(tmp);
+        }
+        
+    }
+    free(ht->buckets);
+    free(ht);
+
+    return;
+}
+
+
 

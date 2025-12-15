@@ -7,7 +7,7 @@
 #include "hashfuncs.h"
 #include "dbfuncs.h"
 
-int main(int argc, char* argv[]) {
+int main() {
     hashtable* ht = create_ht();
 
     MYSQL* conn = mysql_init(NULL);
