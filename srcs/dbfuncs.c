@@ -206,10 +206,13 @@ int ins_upd_db(MYSQL* conn, adv* adventurer, int insorupd) {
 
     switch(insorupd) {
         case 0:
+            int upd = 0;
             
             break;
 
         default:
+            int upd = 1;
+            if(!insupd_adv_db(conn, adventurer, upd)) mysql_rollback(conn);
             break;
     }
 

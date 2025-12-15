@@ -108,7 +108,6 @@ int ht_insert(hashtable *ht, adv* new_adv) {
     return 1;
 }
 
-
 adv* ht_get(hashtable *ht, int key) {
     unsigned int hash = hash_int(key);
     entry *curr = ht->buckets[hash];
