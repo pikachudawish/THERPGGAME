@@ -24,7 +24,6 @@
 #define UPD_S
 #define UPD_ADV
 
-
 long insupd_helmet_db(MYSQL* conn, helmet_stats* h, int upd) {
     if(upd) {
         
@@ -35,17 +34,18 @@ long insupd_helmet_db(MYSQL* conn, helmet_stats* h, int upd) {
     MYSQL_STMT* stmt = mysql_stmt_init(conn);
     mysql_stmt_prepare(stmt, INS_H, strlen(INS_H));
 
-    MYSQL_BIND b[4];
-    b[0].buffer_type = MYSQL_TYPE_STRING;
-    b[0].buffer = h->name;
-    b[0].buffer_length = strlen(h->name);
-    b[1].buffer_type = MYSQL_TYPE_LONG;
-    b[1].buffer = &h->lvl;
-    b[2].buffer_type = MYSQL_TYPE_DOUBLE;
-    b[2].buffer = &h->exp;
-    b[3].buffer_type = MYSQL_TYPE_LONG;
-    b[3].buffer = &h->defense;
-    mysql_stmt_bind_param(stmt, b);
+    MYSQL_BIND bind[4];
+    memset(bind, 0, sizeof(bind));
+    bind[0].buffer_type = MYSQL_TYPE_STRING;
+    bind[0].buffer = h->name;
+    bind[0].buffer_length = strlen(h->name);
+    bind[1].buffer_type = MYSQL_TYPE_LONG;
+    bind[1].buffer = &h->lvl;
+    bind[2].buffer_type = MYSQL_TYPE_DOUBLE;
+    bind[2].buffer = &h->exp;
+    bind[3].buffer_type = MYSQL_TYPE_LONG;
+    bind[3].buffer = &h->defense;
+    mysql_stmt_bind_param(stmt, bind);
     mysql_stmt_execute(stmt);
 
     long id_helmet = mysql_stmt_insert_id(stmt);
@@ -64,17 +64,18 @@ long insupd_chestplate_db(MYSQL* conn, chestplate_stats* c, int upd) {
     MYSQL_STMT* stmt = mysql_stmt_init(conn);
     mysql_stmt_prepare(stmt, INS_C, strlen(INS_C));
 
-    MYSQL_BIND b[4];
-    b[0].buffer_type = MYSQL_TYPE_STRING;
-    b[0].buffer = c->name;
-    b[0].buffer_length = strlen(c->name);
-    b[1].buffer_type = MYSQL_TYPE_LONG;
-    b[1].buffer = &c->lvl;
-    b[2].buffer_type = MYSQL_TYPE_DOUBLE;
-    b[2].buffer = &c->exp;
-    b[3].buffer_type = MYSQL_TYPE_LONG;
-    b[3].buffer = &c->defense;
-    mysql_stmt_bind_param(stmt, b);
+    MYSQL_BIND bind[4];
+    memset(bind, 0, sizeof(bind));
+    bind[0].buffer_type = MYSQL_TYPE_STRING;
+    bind[0].buffer = c->name;
+    bind[0].buffer_length = strlen(c->name);
+    bind[1].buffer_type = MYSQL_TYPE_LONG;
+    bind[1].buffer = &c->lvl;
+    bind[2].buffer_type = MYSQL_TYPE_DOUBLE;
+    bind[2].buffer = &c->exp;
+    bind[3].buffer_type = MYSQL_TYPE_LONG;
+    bind[3].buffer = &c->defense;
+    mysql_stmt_bind_param(stmt, bind);
     mysql_stmt_execute(stmt);
 
     long id_chestplate = mysql_stmt_insert_id(stmt);
@@ -94,17 +95,18 @@ long insupd_armlet_db(MYSQL* conn, armlet_stats* a, int upd) {
     MYSQL_STMT* stmt = mysql_stmt_init(conn);
     mysql_stmt_prepare(stmt, INS_A, strlen(INS_A));
 
-    MYSQL_BIND b[4];
-    b[0].buffer_type = MYSQL_TYPE_STRING;
-    b[0].buffer = a->name;
-    b[0].buffer_length = strlen(a->name);
-    b[1].buffer_type = MYSQL_TYPE_LONG;
-    b[1].buffer = &a->lvl;
-    b[2].buffer_type = MYSQL_TYPE_DOUBLE;
-    b[2].buffer = &a->exp;
-    b[3].buffer_type = MYSQL_TYPE_LONG;
-    b[3].buffer = &a->defense;
-    mysql_stmt_bind_param(stmt, b);
+    MYSQL_BIND bind[4];
+    memset(bind, 0, sizeof(bind));
+    bind[0].buffer_type = MYSQL_TYPE_STRING;
+    bind[0].buffer = a->name;
+    bind[0].buffer_length = strlen(a->name);
+    bind[1].buffer_type = MYSQL_TYPE_LONG;
+    bind[1].buffer = &a->lvl;
+    bind[2].buffer_type = MYSQL_TYPE_DOUBLE;
+    bind[2].buffer = &a->exp;
+    bind[3].buffer_type = MYSQL_TYPE_LONG;
+    bind[3].buffer = &a->defense;
+    mysql_stmt_bind_param(stmt, bind);
     mysql_stmt_execute(stmt);
 
     long id_armlet = mysql_stmt_insert_id(stmt);
@@ -124,6 +126,7 @@ long insupd_boots_db(MYSQL* conn, boots_stats* b, int upd) {
     mysql_stmt_prepare(stmt, INS_B, strlen(INS_B));
 
     MYSQL_BIND bind[4];
+    memset(bind, 0, sizeof(bind));
     bind[0].buffer_type = MYSQL_TYPE_STRING;
     bind[0].buffer = b->name;
     bind[0].buffer_length = strlen(b->name);
@@ -152,25 +155,26 @@ long insupd_weapon_db(MYSQL* conn, weapon_stats* w, int upd) {
     MYSQL_STMT* stmt = mysql_stmt_init(conn);
     mysql_stmt_prepare(stmt, INS_W, strlen(INS_W));
 
-    MYSQL_BIND b[5];
-    b[0].buffer_type = MYSQL_TYPE_STRING;
-    b[0].buffer = w->name;
-    b[0].buffer_length = strlen(w->name);
-    b[1].buffer_type = MYSQL_TYPE_LONG;
-    b[1].buffer = &w->lvl;
-    b[2].buffer_type = MYSQL_TYPE_DOUBLE;
-    b[2].buffer = &w->exp;
-    b[3].buffer_type = MYSQL_TYPE_LONG;
-    b[3].buffer = &w->physical_dmg;
-    b[4].buffer_type = MYSQL_TYPE_LONG;
-    b[4].buffer = &w->magic_dmg;
-    mysql_stmt_bind_param(stmt, b);
+    MYSQL_BIND bind[5];
+    memset(bind, 0, sizeof(bind));
+    bind[0].buffer_type = MYSQL_TYPE_STRING;
+    bind[0].buffer = w->name;
+    bind[0].buffer_length = strlen(w->name);
+    bind[1].buffer_type = MYSQL_TYPE_LONG;
+    bind[1].buffer = &w->lvl;
+    bind[2].buffer_type = MYSQL_TYPE_DOUBLE;
+    bind[2].buffer = &w->exp;
+    bind[3].buffer_type = MYSQL_TYPE_LONG;
+    bind[3].buffer = &w->physical_dmg;
+    bind[4].buffer_type = MYSQL_TYPE_LONG;
+    bind[4].buffer = &w->magic_dmg;
+    mysql_stmt_bind_param(stmt, bind);
     mysql_stmt_execute(stmt);
 
-    long id_helmet = mysql_stmt_insert_id(stmt);
+    long id_weapon = mysql_stmt_insert_id(stmt);
     mysql_stmt_close(stmt);
 
-    return id_helmet;
+    return id_weapon;
 }
 
 
@@ -191,6 +195,7 @@ long insupd_equipment_db(MYSQL* conn, equipment* e, int upd) {
     mysql_stmt_prepare(stmt, INS_E, strlen(INS_E));
 
     MYSQL_BIND bind[5];
+    memset(bind, 0, sizeof(bind));
     bind[0].buffer_type = MYSQL_TYPE_LONG;
     bind[0].buffer = &helmet_id;
     bind[1].buffer_type = MYSQL_TYPE_LONG;
@@ -221,6 +226,7 @@ long insupd_moves_db(MYSQL* conn, moves* m, int upd) {
     mysql_stmt_prepare(stmt, INS_M, strlen(INS_M));
 
     MYSQL_BIND bind[4];
+    memset(bind, 0, sizeof(bind));
     bind[0].buffer_type = MYSQL_TYPE_LONG;
     bind[0].buffer = &m->move1_id;
     bind[1].buffer_type = MYSQL_TYPE_LONG;
@@ -249,6 +255,7 @@ long insupd_stats_db(MYSQL* conn, stats* s, int upd) {
     mysql_stmt_prepare(stmt, INS_S, strlen(INS_S));
 
     MYSQL_BIND bind[8];
+    memset(bind, 0, sizeof(bind));
     bind[0].buffer_type = MYSQL_TYPE_STRING;
     bind[0].buffer = s->name;
     bind[0].buffer_length = strlen(s->name);
@@ -274,8 +281,6 @@ long insupd_stats_db(MYSQL* conn, stats* s, int upd) {
     mysql_stmt_close(stmt);
 
     return id_stats;
-
-    return 1;
 }
 
 long insupd_adv_db(MYSQL* conn, adv* adventurer, int upd) {
@@ -292,13 +297,17 @@ long insupd_adv_db(MYSQL* conn, adv* adventurer, int upd) {
     mysql_stmt_prepare(stmt, INS_ADV, strlen(INS_ADV));
 
     MYSQL_BIND bind[3];
+    memset(bind, 0, sizeof(bind));
     bind[0].buffer_type = MYSQL_TYPE_LONG;
     bind[0].buffer = &id_stats;
     bind[1].buffer_type = MYSQL_TYPE_LONG;
     bind[1].buffer = &id_moves;
     bind[2].buffer_type = MYSQL_TYPE_LONG;
     bind[2].buffer = &id_equipment;
+    mysql_stmt_bind_param(stmt, bind);
+    mysql_stmt_execute(stmt);
 
+    mysql_stmt_close(stmt);
 
     return 1;
 } 

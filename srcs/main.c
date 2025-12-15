@@ -15,12 +15,13 @@ int main() {
         mysql_close(conn); freeht(ht);
         return 1;
     }
-
+    
     printf("\n#-#-#-#-# THE RPG GAME #-#-#-#-#\n\n");
     printf("Greetings Adventure, welcome to the amazing world of *insert name*! ");
 
     
 
+    mysql_close(conn);
 
     return 0;
 }

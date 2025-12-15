@@ -174,6 +174,32 @@ int db_to_ht_init_conn(MYSQL* conn, hashtable* ht) {
     return 1;
 }
 
+int ins_upd_db(MYSQL* conn, adv* adventurer, int insorupd) {
+    mysql_autocommit(conn, 0);
+
+    int upd;
+    switch(insorupd) {
+        case 0:
+            upd = 1;
+            
+            break;
+
+        case MYSQL_NO_DATA:
+            upd = 0;
+            printf("D\n");
+            if(!insupd_adv_db(conn, adventurer, upd)) mysql_rollback(conn);
+            break;
+
+        default:
+            mysql_autocommit(conn, 1);
+            return 0;
+    }
+
+    mysql_commit(conn);
+    mysql_autocommit(conn, 1);
+    return 1;
+}
+
 int use_db(MYSQL* conn, adv* adventurer) {
     MYSQL_STMT* stmt = mysql_stmt_init(conn);
     if(mysql_stmt_prepare(stmt, "SELECT 1 FROM adv WHERE id = ?", strlen("SELECT 1 FROM adv WHERE id = ?")) != 0) {
@@ -201,26 +227,9 @@ int use_db(MYSQL* conn, adv* adventurer) {
     return 1;
 }
 
-int ins_upd_db(MYSQL* conn, adv* adventurer, int insorupd) {
-    mysql_autocommit(conn, 0);
-
-    switch(insorupd) {
-        case 0:
-            int upd = 0;
-            
-            break;
-
-        default:
-            int upd = 1;
-            if(!insupd_adv_db(conn, adventurer, upd)) mysql_rollback(conn);
-            break;
-    }
-
-    mysql_autocommit(conn, 1);
-    return 1;
-}
-
+/*
 int rmv_db(MYSQL* conn, int adv_id) {
 
     return 1;
 }
+*/
