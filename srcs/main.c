@@ -19,7 +19,7 @@ int main() {
     printf("\n#-#-#-#-# THE RPG GAME #-#-#-#-#\n\n");
     printf("Greetings Adventure, welcome to the amazing world of *insert name*! ");
 
-    
+    rmv_adv_db(conn, 3);
 
     mysql_close(conn);
 
