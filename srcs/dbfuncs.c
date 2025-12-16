@@ -226,24 +226,28 @@ int ins_upd_db(MYSQL* conn, adv* adventurer) {
 }
 
 
-int rmv_db(MYSQL* conn, int adv_id) {
+int rmv_adv_db(MYSQL* conn, int adv_id) {
+    mysql_autocommit(conn, 0);
+    
     MYSQL_STMT* stmt = mysql_stmt_init(conn);
     if(mysql_stmt_prepare(stmt, "SELECT id_stats, id_moves, id_equipment FROM adv WHERE id = ?", strlen("SELECT id_stats, id_moves, id_equipment FROM adv WHERE id = ?")) != 0) {
-        mysql_stmt_close(stmt);
+        mysql_rollback(conn); mysql_autocommit(conn, 1); mysql_stmt_close(stmt);
         return 0;
     }
 
-    long stats_id = 0, moves_id = 0, equipment_id = 0; 
+    int stats_id = 0, moves_id = 0, equipment_id = 0; 
     MYSQL_BIND bP[1]; 
     memset(bP, 0, sizeof(bP));
     bP[0].buffer_type = MYSQL_TYPE_LONG;
     bP[0].buffer = &adv_id;
     if(mysql_stmt_bind_param(stmt, bP)) {
+        mysql_rollback(conn);
+        mysql_autocommit(conn, 1);
         mysql_stmt_close(stmt);
         return 0;
     }
 
-    MYSQL_BIND bR[1]; 
+    MYSQL_BIND bR[3]; 
     memset(bR, 0, sizeof(bR));
     bR[0].buffer_type = MYSQL_TYPE_LONG;
     bR[0].buffer = &stats_id;
@@ -252,21 +256,47 @@ int rmv_db(MYSQL* conn, int adv_id) {
     bR[2].buffer_type = MYSQL_TYPE_LONG;
     bR[2].buffer = &equipment_id;
     if(mysql_stmt_bind_result(stmt, bR)) {
-        mysql_stmt_close(stmt);
+        mysql_rollback(conn); mysql_autocommit(conn, 1); mysql_stmt_close(stmt);
         return 0;
     }
     if(mysql_stmt_execute(stmt)) {
-        mysql_stmt_close(stmt);
+        mysql_rollback(conn); mysql_autocommit(conn, 1); mysql_stmt_close(stmt);
+        return 0;
+    }
+    if(mysql_stmt_store_result(stmt)) {
+        mysql_rollback(conn); mysql_autocommit(conn, 1); mysql_stmt_close(stmt);
+        return 0;
+    }
+    if (mysql_stmt_fetch(stmt) != 0) {
+        mysql_rollback(conn); mysql_autocommit(conn, 1); mysql_stmt_close(stmt);
         return 0;
     }
 
-    mysql_autocommit(conn, 0);
+    if(!rmv_equipment_db(conn, equipment_id) || !rmv_stats_db(conn, stats_id) || !rmv_moves_db(conn, moves_id)) {
+        mysql_rollback(conn); mysql_autocommit(conn, 1); mysql_stmt_free_result(stmt); mysql_stmt_free_result(stmt); mysql_stmt_close(stmt);
+        return 0;
+    }
+    
+    mysql_stmt_close(stmt);
+    stmt = mysql_stmt_init(conn);
+    if(mysql_stmt_prepare(stmt, "DELETE FROM adv WHERE id = ?", strlen("DELETE FROM adv WHERE id = ?")) != 0) {
+        mysql_rollback(conn); mysql_autocommit(conn, 1); mysql_stmt_free_result(stmt); mysql_stmt_close(stmt);
+        return 0;
+    }
+    if(mysql_stmt_bind_param(stmt, bP)) {
+        mysql_rollback(conn); mysql_autocommit(conn, 1); mysql_stmt_free_result(stmt); mysql_stmt_close(stmt);
+        return 0;
+    }
+    if(mysql_stmt_execute(stmt)) {
+        mysql_rollback(conn); mysql_autocommit(conn, 1); mysql_stmt_free_result(stmt); mysql_stmt_close(stmt);
+        return 0;
+    }
 
-
+    mysql_stmt_free_result(stmt);
+    msysql_stmt_close(stmt); 
 
     mysql_commit(conn);
     mysql_autocommit(conn, 1);
-    mysql_stmt_close(stmt);
 
     return 1;
 }

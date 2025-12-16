@@ -10,5 +10,13 @@ long insupd_equipment_db(MYSQL* conn, equipment* e, int upd);
 long insupd_moves_db(MYSQL* conn, moves* m, int upd);
 long insupd_stats_db(MYSQL* conn, stats* s, int upd);
 long insupd_adv_db(MYSQL* conn, adv* adventurer, int upd);
+int rmv_equipment_db(MYSQL* conn, int equipment_id);
+int rmv_moves_dv(MYSQL* conn, int moves_id);
+int rmv_stats_db(MYSQL* conn, int stats_id);
+int rmv_helmet_db(MYSQL* conn, int helmet_id);
+int rmv_chestplate_db(MYSQL* conn, int chestplate_id);
+int rmv_armlet_db(MYSQL* conn, int armlet_id);
+int rmv_boots_db(MYSQL* conn, int boots_id);
+int rmv_weapon_db(MYSQL* conn, int weapon_id);
 
 #endif

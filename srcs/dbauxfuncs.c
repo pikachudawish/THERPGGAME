@@ -393,16 +393,243 @@ long insupd_adv_db(MYSQL* conn, adv* adventurer, int upd) {
     return 1;
 }
 
-long rmv_moves_dv(MYSQL* conn, long moves_id) {
-    if(moves_id < 1) return 0;
+int rmv_helmet_db(MYSQL* conn, int helmet_id) {
+    if(helmet_id < 1) return 0;
 
     MYSQL_STMT* stmt = mysql_stmt_init(conn);
-    if(mysql_stmt_prepare(stmt, "DELETE FROM adv_stats where id = ?", strlen("DELETE FROM adv_stats where id = ?")) != 0) {
+    if(mysql_stmt_prepare(stmt, "DELETE FROM helmets where id = ?", strlen("DELETE FROM helmets where id = ?")) != 0) {
         mysql_stmt_close(stmt);
         return 0;
     }
 
     MYSQL_BIND b[1];
+    memset(b, 0, sizeof(b));
+    b[0].buffer_type = MYSQL_TYPE_LONG;
+    b[0].buffer = &helmet_id;
+    if(mysql_stmt_bind_param(stmt, b)){
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+    if(mysql_stmt_execute(stmt)) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+
+    mysql_stmt_close(stmt);
+
+    
+
+    return 1;
+}
+
+int rmv_chestplate_db(MYSQL* conn, int chestplate_id) {
+    if(chestplate_id < 1) return 0;
+
+    MYSQL_STMT* stmt = mysql_stmt_init(conn);
+    if(mysql_stmt_prepare(stmt, "DELETE FROM chestplates where id = ?", strlen("DELETE FROM chestplates where id = ?")) != 0) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+
+    MYSQL_BIND b[1];
+    memset(b, 0, sizeof(b));
+    b[0].buffer_type = MYSQL_TYPE_LONG;
+    b[0].buffer = &chestplate_id;
+    if(mysql_stmt_bind_param(stmt, b)){
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+    if(mysql_stmt_execute(stmt)) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+
+    mysql_stmt_close(stmt);
+
+    return 1;
+}
+
+int rmv_armlet_db(MYSQL* conn, int armlet_id) {
+    if(armlet_id < 1) return 0;
+
+    MYSQL_STMT* stmt = mysql_stmt_init(conn);
+    if(mysql_stmt_prepare(stmt, "DELETE FROM armlets where id = ?", strlen("DELETE FROM armlets where id = ?")) != 0) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+
+    MYSQL_BIND b[1];
+    memset(b, 0, sizeof(b));
+    b[0].buffer_type = MYSQL_TYPE_LONG;
+    b[0].buffer = &armlet_id;
+    if(mysql_stmt_bind_param(stmt, b)){
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+    if(mysql_stmt_execute(stmt)) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+
+    mysql_stmt_close(stmt);
+
+    return 1;
+}
+
+int rmv_boots_db(MYSQL* conn, int boots_id) {
+    if(boots_id < 1) return 0;
+
+    MYSQL_STMT* stmt = mysql_stmt_init(conn);
+    if(mysql_stmt_prepare(stmt, "DELETE FROM boots where id = ?", strlen("DELETE FROM boots where id = ?")) != 0) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+
+    MYSQL_BIND b[1];
+    memset(b, 0, sizeof(b));
+    b[0].buffer_type = MYSQL_TYPE_LONG;
+    b[0].buffer = &boots_id;
+    if(mysql_stmt_bind_param(stmt, b)){
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+    if(mysql_stmt_execute(stmt)) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+
+    mysql_stmt_close(stmt);
+
+    return 1;
+}
+
+int rmv_weapon_db(MYSQL* conn, int weapon_id) {
+    if(weapon_id < 1) return 0;
+
+    MYSQL_STMT* stmt = mysql_stmt_init(conn);
+    if(mysql_stmt_prepare(stmt, "DELETE FROM weapons where id = ?", strlen("DELETE FROM weapons where id = ?")) != 0) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+
+    MYSQL_BIND b[1];
+    memset(b, 0, sizeof(b));
+    b[0].buffer_type = MYSQL_TYPE_LONG;
+    b[0].buffer = &weapon_id;
+    if(mysql_stmt_bind_param(stmt, b)){
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+    if(mysql_stmt_execute(stmt)) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+
+    mysql_stmt_close(stmt);
+
+    return 1;
+}
+
+int rmv_equipment_db(MYSQL* conn, int equipment_id) {
+    if(equipment_id < 1) return 0;
+
+    MYSQL_STMT* stmt = mysql_stmt_init(conn);
+    if(mysql_stmt_prepare(stmt, "SELECT helmet_id, chestplate_id, armlet_id, boots_id, weapon_id FROM adv_equipment WHERE id = ?", strlen("SELECT helmet_id, chestplate_id, armlet_id, boots_id, weapon_id FROM adv_equipment WHERE id = ?")) != 0) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+
+    int helmet_id = 0, chestplate_id = 0, armlet_id = 0, boots_id = 0, weapon_id = 0; 
+    MYSQL_BIND bP[1]; 
+    memset(bP, 0, sizeof(bP));
+    bP[0].buffer_type = MYSQL_TYPE_LONG;
+    bP[0].buffer = &equipment_id;
+    if(mysql_stmt_bind_param(stmt, bP)) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+
+    MYSQL_BIND bR[5]; 
+    memset(bR, 0, sizeof(bR));
+    bR[0].buffer_type = MYSQL_TYPE_LONG;
+    bR[0].buffer = &helmet_id;
+    bR[1].buffer_type = MYSQL_TYPE_LONG;
+    bR[1].buffer = &chestplate_id;
+    bR[2].buffer_type = MYSQL_TYPE_LONG;
+    bR[2].buffer = &armlet_id;
+    bR[3].buffer_type = MYSQL_TYPE_LONG;
+    bR[3].buffer = &boots_id;
+    bR[4].buffer_type = MYSQL_TYPE_LONG;
+    bR[4].buffer = &weapon_id;
+    if(mysql_stmt_bind_result(stmt, bR)) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+    if(mysql_stmt_execute(stmt)) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+    if(mysql_stmt_store_result(stmt)) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+    if (mysql_stmt_fetch(stmt) != 0) {
+        mysql_stmt_free_result(stmt); mysql_stmt_close(stmt);
+        return 0;
+    }
+
+    if(!rmv_helmet_db(conn, helmet_id)) {
+        mysql_stmt_free_result(stmt); mysql_stmt_close(stmt);
+        return 0;
+    }
+    if(!rmv_chestplate_db(conn, chestplate_id)) {
+        mysql_stmt_free_result(stmt); mysql_stmt_close(stmt);
+        return 0;
+    }
+    if(!rmv_armlet_db(conn, armlet_id)) {
+        mysql_stmt_free_result(stmt); mysql_stmt_close(stmt);
+        return 0;
+    }
+    if(!rmv_boots_db(conn, boots_id)) {
+        mysql_stmt_free_result(stmt); mysql_stmt_close(stmt);
+        return 0;
+    }
+    if(!rmv_weapon_db(conn, weapon_id)) {
+        mysql_stmt_free_result(stmt); mysql_stmt_close(stmt);
+        return 0;
+    }
+
+    mysql_stmt_close(stmt);
+    stmt = mysql_stmt_init(conn);
+    if(mysql_stmt_prepare(stmt, "DELETE FROM adv_equipment WHERE id = ?", strlen("DELETE FROM adv_equipment WHERE id = ?")) != 0) {
+        mysql_stmt_close(stmt); 
+        return 0;
+    }
+    if(mysql_stmt_bind_param(stmt, bP)) {
+        mysql_stmt_close(stmt); 
+        return 0;
+    }
+    if(mysql_stmt_execute(stmt)) {
+        mysql_stmt_close(stmt); 
+        return 0;
+    }
+    mysql_stmt_close(stmt);
+
+    return 1;
+}
+
+
+int rmv_moves_dv(MYSQL* conn, int moves_id) {
+    if(moves_id < 1) return 0;
+
+    MYSQL_STMT* stmt = mysql_stmt_init(conn);
+    if(mysql_stmt_prepare(stmt, "DELETE FROM adv_moves where id = ?", strlen("DELETE FROM adv_moves where id = ?")) != 0) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+
+    MYSQL_BIND b[1];
+    memset(b, 0, sizeof(b));
     b[0].buffer_type = MYSQL_TYPE_LONG;
     b[0].buffer = &moves_id;
     if(mysql_stmt_bind_param(stmt, b)){
@@ -419,9 +646,29 @@ long rmv_moves_dv(MYSQL* conn, long moves_id) {
     return 1;
 }
 
-long rmv_stats_db(MYSQL* conn, long stats_id) {
+int rmv_stats_db(MYSQL* conn, int stats_id) {
+    if(stats_id < 1) return 0;
 
+    MYSQL_STMT* stmt = mysql_stmt_init(conn);
+    if(mysql_stmt_prepare(stmt, "DELETE FROM adv_stats where id = ?", strlen("DELETE FROM adv_stats where id = ?")) != 0) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }
 
+    MYSQL_BIND b[1];
+    memset(b, 0, sizeof(b));
+    b[0].buffer_type = MYSQL_TYPE_LONG;
+    b[0].buffer = &stats_id;
+    if(mysql_stmt_bind_param(stmt, b)){
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+    if(mysql_stmt_execute(stmt)) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+
+    mysql_stmt_close(stmt);
 
     return 1;
 }
