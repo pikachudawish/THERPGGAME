@@ -29,7 +29,6 @@ void freeht(hashtable* ht) {
             free_adv(tmp->adventurer);
             free(tmp);
         }
-        
     }
     free(ht->buckets);
     free(ht);

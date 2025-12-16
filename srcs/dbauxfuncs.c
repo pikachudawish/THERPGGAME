@@ -28,11 +28,14 @@ long insupd_helmet_db(MYSQL* conn, helmet_stats* h, int upd) {
     if(upd) {
         
 
-        return 0;
+        return -1;
     }
 
     MYSQL_STMT* stmt = mysql_stmt_init(conn);
-    mysql_stmt_prepare(stmt, INS_H, strlen(INS_H));
+    if(mysql_stmt_prepare(stmt, INS_H, strlen(INS_H))) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }   
 
     MYSQL_BIND bind[4];
     memset(bind, 0, sizeof(bind));
@@ -45,8 +48,14 @@ long insupd_helmet_db(MYSQL* conn, helmet_stats* h, int upd) {
     bind[2].buffer = &h->exp;
     bind[3].buffer_type = MYSQL_TYPE_LONG;
     bind[3].buffer = &h->defense;
-    mysql_stmt_bind_param(stmt, bind);
-    mysql_stmt_execute(stmt);
+    if(mysql_stmt_bind_param(stmt, bind)){
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+    if(mysql_stmt_execute(stmt)) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }
 
     long id_helmet = mysql_stmt_insert_id(stmt);
     mysql_stmt_close(stmt);
@@ -58,11 +67,14 @@ long insupd_chestplate_db(MYSQL* conn, chestplate_stats* c, int upd) {
     if(upd) {
 
 
-        return 0;
+        return -1;
     }
 
     MYSQL_STMT* stmt = mysql_stmt_init(conn);
-    mysql_stmt_prepare(stmt, INS_C, strlen(INS_C));
+    if(mysql_stmt_prepare(stmt, INS_C, strlen(INS_C))) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }   
 
     MYSQL_BIND bind[4];
     memset(bind, 0, sizeof(bind));
@@ -75,8 +87,14 @@ long insupd_chestplate_db(MYSQL* conn, chestplate_stats* c, int upd) {
     bind[2].buffer = &c->exp;
     bind[3].buffer_type = MYSQL_TYPE_LONG;
     bind[3].buffer = &c->defense;
-    mysql_stmt_bind_param(stmt, bind);
-    mysql_stmt_execute(stmt);
+    if(mysql_stmt_bind_param(stmt, bind)){
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+    if(mysql_stmt_execute(stmt)) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }
 
     long id_chestplate = mysql_stmt_insert_id(stmt);
     mysql_stmt_close(stmt);
@@ -84,16 +102,18 @@ long insupd_chestplate_db(MYSQL* conn, chestplate_stats* c, int upd) {
     return id_chestplate;
 }
 
-
 long insupd_armlet_db(MYSQL* conn, armlet_stats* a, int upd) {
     if(upd) {
 
 
-        return 0;
+        return -1;
     }
 
     MYSQL_STMT* stmt = mysql_stmt_init(conn);
-    mysql_stmt_prepare(stmt, INS_A, strlen(INS_A));
+    if(mysql_stmt_prepare(stmt, INS_A, strlen(INS_A))) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }   
 
     MYSQL_BIND bind[4];
     memset(bind, 0, sizeof(bind));
@@ -106,8 +126,14 @@ long insupd_armlet_db(MYSQL* conn, armlet_stats* a, int upd) {
     bind[2].buffer = &a->exp;
     bind[3].buffer_type = MYSQL_TYPE_LONG;
     bind[3].buffer = &a->defense;
-    mysql_stmt_bind_param(stmt, bind);
-    mysql_stmt_execute(stmt);
+    if(mysql_stmt_bind_param(stmt, bind)){
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+    if(mysql_stmt_execute(stmt)) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }
 
     long id_armlet = mysql_stmt_insert_id(stmt);
     mysql_stmt_close(stmt);
@@ -119,11 +145,14 @@ long insupd_boots_db(MYSQL* conn, boots_stats* b, int upd) {
     if(upd) {
 
 
-        return 0;
+        return -1;
     }
 
     MYSQL_STMT* stmt = mysql_stmt_init(conn);
-    mysql_stmt_prepare(stmt, INS_B, strlen(INS_B));
+    if(mysql_stmt_prepare(stmt, INS_B, strlen(INS_B))) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }   
 
     MYSQL_BIND bind[4];
     memset(bind, 0, sizeof(bind));
@@ -136,8 +165,14 @@ long insupd_boots_db(MYSQL* conn, boots_stats* b, int upd) {
     bind[2].buffer = &b->exp;
     bind[3].buffer_type = MYSQL_TYPE_LONG;
     bind[3].buffer = &b->defense;
-    mysql_stmt_bind_param(stmt, bind);
-    mysql_stmt_execute(stmt);
+    if(mysql_stmt_bind_param(stmt, bind)){
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+    if(mysql_stmt_execute(stmt)) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }
 
     long id_boots = mysql_stmt_insert_id(stmt);
     mysql_stmt_close(stmt);
@@ -149,11 +184,14 @@ long insupd_weapon_db(MYSQL* conn, weapon_stats* w, int upd) {
     if(upd) {
 
 
-        return 0;
+        return -1;
     }
 
     MYSQL_STMT* stmt = mysql_stmt_init(conn);
-    mysql_stmt_prepare(stmt, INS_W, strlen(INS_W));
+    if(mysql_stmt_prepare(stmt, INS_W, strlen(INS_W))) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }   
 
     MYSQL_BIND bind[5];
     memset(bind, 0, sizeof(bind));
@@ -168,8 +206,14 @@ long insupd_weapon_db(MYSQL* conn, weapon_stats* w, int upd) {
     bind[3].buffer = &w->physical_dmg;
     bind[4].buffer_type = MYSQL_TYPE_LONG;
     bind[4].buffer = &w->magic_dmg;
-    mysql_stmt_bind_param(stmt, bind);
-    mysql_stmt_execute(stmt);
+    if(mysql_stmt_bind_param(stmt, bind)){
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+    if(mysql_stmt_execute(stmt)) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }
 
     long id_weapon = mysql_stmt_insert_id(stmt);
     mysql_stmt_close(stmt);
@@ -177,12 +221,11 @@ long insupd_weapon_db(MYSQL* conn, weapon_stats* w, int upd) {
     return id_weapon;
 }
 
-
 long insupd_equipment_db(MYSQL* conn, equipment* e, int upd) {
     if(upd) {
 
 
-        return 0;
+        return -1;
     }
 
     int helmet_id = insupd_helmet_db(conn, e->h_s, upd);
@@ -190,9 +233,13 @@ long insupd_equipment_db(MYSQL* conn, equipment* e, int upd) {
     int armlet_id = insupd_armlet_db(conn, e->a_s, upd);
     int boots_id = insupd_boots_db(conn, e->b_s, upd);
     int weapon_id = insupd_weapon_db(conn, e->w_s, upd);
+    if(!helmet_id || !chestplate_id || !armlet_id || !boots_id || !weapon_id) return 0;
 
     MYSQL_STMT* stmt = mysql_stmt_init(conn);
-    mysql_stmt_prepare(stmt, INS_E, strlen(INS_E));
+    if(mysql_stmt_prepare(stmt, INS_E, strlen(INS_E))) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }   
 
     MYSQL_BIND bind[5];
     memset(bind, 0, sizeof(bind));
@@ -206,8 +253,14 @@ long insupd_equipment_db(MYSQL* conn, equipment* e, int upd) {
     bind[3].buffer = &boots_id;
     bind[4].buffer_type = MYSQL_TYPE_LONG;
     bind[4].buffer = &weapon_id;
-    mysql_stmt_bind_param(stmt, bind);
-    mysql_stmt_execute(stmt);
+    if(mysql_stmt_bind_param(stmt, bind)){
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+    if(mysql_stmt_execute(stmt)) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }
 
     long id_equipment = mysql_stmt_insert_id(stmt);
     mysql_stmt_close(stmt);
@@ -219,11 +272,14 @@ long insupd_moves_db(MYSQL* conn, moves* m, int upd) {
     if(upd) {
 
 
-        return 0;
+        return -1;
     }
 
     MYSQL_STMT* stmt = mysql_stmt_init(conn);
-    mysql_stmt_prepare(stmt, INS_M, strlen(INS_M));
+    if(mysql_stmt_prepare(stmt, INS_M, strlen(INS_M))) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }   
 
     MYSQL_BIND bind[4];
     memset(bind, 0, sizeof(bind));
@@ -235,8 +291,14 @@ long insupd_moves_db(MYSQL* conn, moves* m, int upd) {
     bind[2].buffer = &m->move3_id;
     bind[3].buffer_type = MYSQL_TYPE_LONG;
     bind[3].buffer = &m->move4_id;
-    mysql_stmt_bind_param(stmt, bind);
-    mysql_stmt_execute(stmt);
+    if(mysql_stmt_bind_param(stmt, bind)){
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+    if(mysql_stmt_execute(stmt)) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }
 
     long id_moves = mysql_stmt_insert_id(stmt);
     mysql_stmt_close(stmt);
@@ -248,11 +310,14 @@ long insupd_stats_db(MYSQL* conn, stats* s, int upd) {
     if(upd) {
 
 
-        return 0;
+        return -1;
     }
 
     MYSQL_STMT* stmt = mysql_stmt_init(conn);
-    mysql_stmt_prepare(stmt, INS_S, strlen(INS_S));
+    if(mysql_stmt_prepare(stmt, INS_S, strlen(INS_S))) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }   
 
     MYSQL_BIND bind[8];
     memset(bind, 0, sizeof(bind));
@@ -274,8 +339,14 @@ long insupd_stats_db(MYSQL* conn, stats* s, int upd) {
     bind[6].buffer = &s->physical_dmg;
     bind[7].buffer_type = MYSQL_TYPE_LONG;
     bind[7].buffer = &s->magic_dmg;
-    mysql_stmt_bind_param(stmt, bind);
-    mysql_stmt_execute(stmt);
+    if(mysql_stmt_bind_param(stmt, bind)){
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+    if(mysql_stmt_execute(stmt)) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }
 
     long id_stats = mysql_stmt_insert_id(stmt);
     mysql_stmt_close(stmt);
@@ -286,15 +357,19 @@ long insupd_stats_db(MYSQL* conn, stats* s, int upd) {
 long insupd_adv_db(MYSQL* conn, adv* adventurer, int upd) {
     if(upd) {
 
-        return 0;
+        return -1;
     }
 
     int id_stats = insupd_stats_db(conn, adventurer->stats, upd);
     int id_moves = insupd_moves_db(conn, adventurer->moves, upd);
     int id_equipment = insupd_equipment_db(conn, adventurer->equipment, upd);
+    if(!id_stats || !id_equipment || !id_moves) return 0;
 
     MYSQL_STMT* stmt = mysql_stmt_init(conn);
-    mysql_stmt_prepare(stmt, INS_ADV, strlen(INS_ADV));
+    if(mysql_stmt_prepare(stmt, INS_ADV, strlen(INS_ADV))) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }   
 
     MYSQL_BIND bind[3];
     memset(bind, 0, sizeof(bind));
@@ -304,10 +379,49 @@ long insupd_adv_db(MYSQL* conn, adv* adventurer, int upd) {
     bind[1].buffer = &id_moves;
     bind[2].buffer_type = MYSQL_TYPE_LONG;
     bind[2].buffer = &id_equipment;
-    mysql_stmt_bind_param(stmt, bind);
-    mysql_stmt_execute(stmt);
+    if(mysql_stmt_bind_param(stmt, bind)){
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+    if(mysql_stmt_execute(stmt)) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }
 
     mysql_stmt_close(stmt);
 
     return 1;
-} 
+}
+
+long rmv_moves_dv(MYSQL* conn, long moves_id) {
+    if(moves_id < 1) return 0;
+
+    MYSQL_STMT* stmt = mysql_stmt_init(conn);
+    if(mysql_stmt_prepare(stmt, "DELETE FROM adv_stats where id = ?", strlen("DELETE FROM adv_stats where id = ?")) != 0) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+
+    MYSQL_BIND b[1];
+    b[0].buffer_type = MYSQL_TYPE_LONG;
+    b[0].buffer = &moves_id;
+    if(mysql_stmt_bind_param(stmt, b)){
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+    if(mysql_stmt_execute(stmt)) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+
+    mysql_stmt_close(stmt);
+
+    return 1;
+}
+
+long rmv_stats_db(MYSQL* conn, long stats_id) {
+
+
+
+    return 1;
+}
