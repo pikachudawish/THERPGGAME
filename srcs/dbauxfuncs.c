@@ -24,13 +24,7 @@
 #define UPD_S
 #define UPD_ADV
 
-long insupd_helmet_db(MYSQL* conn, helmet_stats* h, int upd) {
-    if(upd) {
-        
-
-        return -1;
-    }
-
+long ins_helmet_db(MYSQL* conn, helmet_stats* h) {
     MYSQL_STMT* stmt = mysql_stmt_init(conn);
     if(mysql_stmt_prepare(stmt, INS_H, strlen(INS_H))) {
         mysql_stmt_close(stmt);
@@ -63,13 +57,7 @@ long insupd_helmet_db(MYSQL* conn, helmet_stats* h, int upd) {
     return id_helmet;
 }
 
-long insupd_chestplate_db(MYSQL* conn, chestplate_stats* c, int upd) {
-    if(upd) {
-
-
-        return -1;
-    }
-
+long ins_chestplate_db(MYSQL* conn, chestplate_stats* c) {
     MYSQL_STMT* stmt = mysql_stmt_init(conn);
     if(mysql_stmt_prepare(stmt, INS_C, strlen(INS_C))) {
         mysql_stmt_close(stmt);
@@ -102,13 +90,7 @@ long insupd_chestplate_db(MYSQL* conn, chestplate_stats* c, int upd) {
     return id_chestplate;
 }
 
-long insupd_armlet_db(MYSQL* conn, armlet_stats* a, int upd) {
-    if(upd) {
-
-
-        return -1;
-    }
-
+long ins_armlet_db(MYSQL* conn, armlet_stats* a) {
     MYSQL_STMT* stmt = mysql_stmt_init(conn);
     if(mysql_stmt_prepare(stmt, INS_A, strlen(INS_A))) {
         mysql_stmt_close(stmt);
@@ -141,13 +123,7 @@ long insupd_armlet_db(MYSQL* conn, armlet_stats* a, int upd) {
     return id_armlet;
 }
 
-long insupd_boots_db(MYSQL* conn, boots_stats* b, int upd) {
-    if(upd) {
-
-
-        return -1;
-    }
-
+long ins_boots_db(MYSQL* conn, boots_stats* b) {
     MYSQL_STMT* stmt = mysql_stmt_init(conn);
     if(mysql_stmt_prepare(stmt, INS_B, strlen(INS_B))) {
         mysql_stmt_close(stmt);
@@ -180,13 +156,7 @@ long insupd_boots_db(MYSQL* conn, boots_stats* b, int upd) {
     return id_boots;
 }
 
-long insupd_weapon_db(MYSQL* conn, weapon_stats* w, int upd) {
-    if(upd) {
-
-
-        return -1;
-    }
-
+long ins_weapon_db(MYSQL* conn, weapon_stats* w) {
     MYSQL_STMT* stmt = mysql_stmt_init(conn);
     if(mysql_stmt_prepare(stmt, INS_W, strlen(INS_W))) {
         mysql_stmt_close(stmt);
@@ -221,18 +191,12 @@ long insupd_weapon_db(MYSQL* conn, weapon_stats* w, int upd) {
     return id_weapon;
 }
 
-long insupd_equipment_db(MYSQL* conn, equipment* e, int upd) {
-    if(upd) {
-
-
-        return -1;
-    }
-
-    int helmet_id = insupd_helmet_db(conn, e->h_s, upd);
-    int chestplate_id = insupd_chestplate_db(conn, e->c_s, upd);
-    int armlet_id = insupd_armlet_db(conn, e->a_s, upd);
-    int boots_id = insupd_boots_db(conn, e->b_s, upd);
-    int weapon_id = insupd_weapon_db(conn, e->w_s, upd);
+long ins_equipment_db(MYSQL* conn, equipment* e) {
+    int helmet_id = insupd_helmet_db(conn, e->h_s);
+    int chestplate_id = insupd_chestplate_db(conn, e->c_s);
+    int armlet_id = insupd_armlet_db(conn, e->a_s);
+    int boots_id = insupd_boots_db(conn, e->b_s);
+    int weapon_id = insupd_weapon_db(conn, e->w_s);
     if(!helmet_id || !chestplate_id || !armlet_id || !boots_id || !weapon_id) return 0;
 
     MYSQL_STMT* stmt = mysql_stmt_init(conn);
@@ -268,13 +232,7 @@ long insupd_equipment_db(MYSQL* conn, equipment* e, int upd) {
     return id_equipment;
 }
 
-long insupd_moves_db(MYSQL* conn, moves* m, int upd) {
-    if(upd) {
-
-
-        return -1;
-    }
-
+long ins_moves_db(MYSQL* conn, moves* m) {
     MYSQL_STMT* stmt = mysql_stmt_init(conn);
     if(mysql_stmt_prepare(stmt, INS_M, strlen(INS_M))) {
         mysql_stmt_close(stmt);
@@ -306,13 +264,7 @@ long insupd_moves_db(MYSQL* conn, moves* m, int upd) {
     return id_moves;
 }
 
-long insupd_stats_db(MYSQL* conn, stats* s, int upd) {
-    if(upd) {
-
-
-        return -1;
-    }
-
+long ins_stats_db(MYSQL* conn, stats* s) {
     MYSQL_STMT* stmt = mysql_stmt_init(conn);
     if(mysql_stmt_prepare(stmt, INS_S, strlen(INS_S))) {
         mysql_stmt_close(stmt);
@@ -354,15 +306,10 @@ long insupd_stats_db(MYSQL* conn, stats* s, int upd) {
     return id_stats;
 }
 
-long insupd_adv_db(MYSQL* conn, adv* adventurer, int upd) {
-    if(upd) {
-
-        return -1;
-    }
-
-    int id_stats = insupd_stats_db(conn, adventurer->stats, upd);
-    int id_moves = insupd_moves_db(conn, adventurer->moves, upd);
-    int id_equipment = insupd_equipment_db(conn, adventurer->equipment, upd);
+long ins_adv_db(MYSQL* conn, adv* adventurer) {
+    int id_stats = insupd_stats_db(conn, adventurer->stats);
+    int id_moves = insupd_moves_db(conn, adventurer->moves);
+    int id_equipment = insupd_equipment_db(conn, adventurer->equipment);
     if(!id_stats || !id_equipment || !id_moves) return 0;
 
     MYSQL_STMT* stmt = mysql_stmt_init(conn);

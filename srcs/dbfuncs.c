@@ -200,28 +200,26 @@ int ins_upd_db(MYSQL* conn, adv* adventurer) {
     int insorupd = mysql_stmt_fetch(stmt);
     mysql_autocommit(conn, 0);
 
-    int upd;
     switch(insorupd) {
         case 0:
-            upd = 1;
-            
+            //Fazer update
             break;
 
         case MYSQL_NO_DATA:
-            upd = 0;
-            if(!insupd_adv_db(conn, adventurer, upd)) mysql_rollback(conn);
+            if(!ins_adv_db(conn, adventurer)) mysql_rollback(conn);
             break;
 
         default:
+            mysql_stmt_free_result(stmt);
+            mysql_stmt_close(stmt);
             mysql_autocommit(conn, 1);
             return 0;
     }
+    mysql_stmt_free_result(stmt);
+    mysql_stmt_close(stmt);
 
     mysql_commit(conn);
     mysql_autocommit(conn, 1);
-
-    mysql_stmt_free_result(stmt);
-    mysql_stmt_close(stmt);
     
     return 1;
 }
