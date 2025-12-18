@@ -5,6 +5,7 @@
 #include "structs_hash.h"
 #include "freefuncs.h"
 #include "hashfuncs.h"
+#include "sdlfuncs.h"
 #include "dbfuncs.h"
 
 int main() {
@@ -18,6 +19,12 @@ int main() {
     
     printf("\n#-#-#-#-# THE RPG GAME #-#-#-#-#\n\n");
     printf("Greetings Adventure, welcome to the amazing world of *insert name*! ");
+
+    if(!gameloop()) {
+        freeht(ht);
+        mysql_close(conn);
+        return 0;
+    } 
 
     freeht(ht);
 

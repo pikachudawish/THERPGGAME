@@ -1,7 +1,7 @@
 NAME = rpg_game
 
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror -Ihdrs $(shell mysql_config --cflags)
+CFLAGS = -Wall -Wextra -Werror -Ihdrs -lSDL2 $(shell mysql_config --cflags) 
 LDFLAGS = $(shell mysql_config --libs)
 
 SRC_DIR = srcs

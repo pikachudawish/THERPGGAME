@@ -192,11 +192,11 @@ long ins_weapon_db(MYSQL* conn, weapon_stats* w) {
 }
 
 long ins_equipment_db(MYSQL* conn, equipment* e) {
-    int helmet_id = insupd_helmet_db(conn, e->h_s);
-    int chestplate_id = insupd_chestplate_db(conn, e->c_s);
-    int armlet_id = insupd_armlet_db(conn, e->a_s);
-    int boots_id = insupd_boots_db(conn, e->b_s);
-    int weapon_id = insupd_weapon_db(conn, e->w_s);
+    int helmet_id = ins_helmet_db(conn, e->h_s);
+    int chestplate_id = ins_chestplate_db(conn, e->c_s);
+    int armlet_id = ins_armlet_db(conn, e->a_s);
+    int boots_id = ins_boots_db(conn, e->b_s);
+    int weapon_id = ins_weapon_db(conn, e->w_s);
     if(!helmet_id || !chestplate_id || !armlet_id || !boots_id || !weapon_id) return 0;
 
     MYSQL_STMT* stmt = mysql_stmt_init(conn);
@@ -307,9 +307,9 @@ long ins_stats_db(MYSQL* conn, stats* s) {
 }
 
 long ins_adv_db(MYSQL* conn, adv* adventurer) {
-    int id_stats = insupd_stats_db(conn, adventurer->stats);
-    int id_moves = insupd_moves_db(conn, adventurer->moves);
-    int id_equipment = insupd_equipment_db(conn, adventurer->equipment);
+    int id_stats = ins_stats_db(conn, adventurer->stats);
+    int id_moves = ins_moves_db(conn, adventurer->moves);
+    int id_equipment = ins_equipment_db(conn, adventurer->equipment);
     if(!id_stats || !id_equipment || !id_moves) return 0;
 
     MYSQL_STMT* stmt = mysql_stmt_init(conn);
