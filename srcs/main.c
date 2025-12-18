@@ -21,9 +21,8 @@ int main() {
     printf("Greetings Adventure, welcome to the amazing world of *insert name*! ");
 
     if(!gameloop()) {
-        freeht(ht);
-        mysql_close(conn);
-        return 0;
+        freeht(ht); mysql_close(conn);
+        return 1;
     } 
 
     freeht(ht);

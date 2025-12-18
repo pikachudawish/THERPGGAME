@@ -14,15 +14,15 @@
 #define INS_M "INSERT INTO adv_moves (move1, move2, move3, move4) VALUES (?, ?, ?, ?);"
 #define INS_S "INSERT INTO adv_stats (name, class, lvl, exp, max_hp, max_mana, pd, md) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
 #define INS_ADV "INSERT INTO adv (id_stats, id_moves, id_equipment) VALUES (?, ?, ?);"
-#define UPD_H
-#define UPD_C
-#define UPD_A
-#define UPD_B
-#define UPD_W
-#define UPD_E
-#define UPD_M
-#define UPD_S
-#define UPD_ADV
+#define UPD_H "UPDATE helmets SET h_name = ?, h_lvl = ?, h_exp = ?, h_defense = ? WHERE id = ?"
+#define UPD_C "UPDATE chestplate SET c_name = ?, c_lvl = ?, c_exp = ?, c_defense = ? WHERE id = ?"
+#define UPD_A "UPDATE armlets SET a_name = ?, a_lvl = ?, a_exp = ?, a_defense = ? WHERE id = ?"
+#define UPD_B "UPDATE boots SET b_name = ?, b_lvl = ?, b_exp = ?, b_defense = ? WHERE id = ?"
+#define UPD_W "UPDATE weapons SET w_name = ?, w_lvl = ?, w_exp = ?, w_pd = ?, w_md = ? WHERE id = ?"
+#define UPD_E "UPDATE adv_equipment SET helmet_id = ?, chestplate_id = ?, armlet_id = ?, boots_id = ?, weapond_id = ? WHERE id = ?"
+#define UPD_M "UPDATE adv_moves SET lvl = ?, exp = ?, max_hp = ?, max_mana = ?, pd = ?, md = ? WHERE id = ?"
+#define UPD_S "UPDATE adv_stats SET w_name = ?, w_lvl = ?, w_exp = ?, w_pd = ?, w_md WHERE id = ?"
+#define UPD_ADV "UPDATE adv SET w_name = ?, w_lvl = ?, w_exp = ?, w_pd = ?, w_md WHERE id = ?"
 
 long ins_helmet_db(MYSQL* conn, helmet_stats* h) {
     MYSQL_STMT* stmt = mysql_stmt_init(conn);
@@ -336,6 +336,51 @@ long ins_adv_db(MYSQL* conn, adv* adventurer) {
     }
 
     mysql_stmt_close(stmt);
+
+    return 1;
+}
+
+int upd_helmet_db(MYSQL* conn, helmet_stats* h) {
+
+    return 1;
+}
+
+int upd_chestplate_db(MYSQL* conn, chestplate_stats* h) {
+
+    return 1;
+}
+
+int upd_armlet_db(MYSQL* conn, armlet_stats* h) {
+
+    return 1;
+}
+
+int upd_boots_db(MYSQL* conn, boots_stats* h) {
+
+    return 1;
+}
+
+int upd_weapon_db(MYSQL* conn, weapon_stats* h) {
+
+    return 1;
+}
+
+int upd_equipment_db(MYSQL* conn, equipment* h) {
+
+    return 1;
+}
+
+int upd_moves_db(MYSQL* conn, moves* h) {
+
+    return 1;
+}
+
+int upd_stats_db(MYSQL* conn, stats* h) {
+
+    return 1;
+}
+
+int upd_adv_db(MYSQL* conn, adv* h) {
 
     return 1;
 }

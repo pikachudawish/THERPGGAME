@@ -15,6 +15,8 @@
 #define DBNAME "rpggame"
 
 int db_to_ht_init_conn(MYSQL* conn, hashtable* ht) {
+    unsigned int timeout = 5;
+    if(mysql_options(conn, MYSQL_OPT_CONNECT_TIMEOUT, &timeout)) return 0;
     if(mysql_real_connect(conn, HOST, USER, PASS, DBNAME, 3306, NULL, 0) == NULL) return 0;
     
     adv* aux = (adv*) malloc(sizeof(adv));
@@ -63,7 +65,6 @@ int db_to_ht_init_conn(MYSQL* conn, hashtable* ht) {
         free(aux->equipment); free(aux->moves); free(aux->stats); free(aux); 
         return 0;
     }
-
 
     MYSQL_STMT* stmt_adv = mysql_stmt_init(conn);
     if(mysql_stmt_prepare(stmt_adv, SELECT, strlen(SELECT)) != 0) {
