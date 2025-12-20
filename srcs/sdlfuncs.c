@@ -4,6 +4,16 @@
 
 #define W_TITLE "The RPG Game"
 
+void intro_game(SDL_Renderer* r) {
+    SDL_SetRenderDrawColor(r, 0, 0, 0, 255);
+    SDL_RenderClear(r);
+    SDL_RenderPresent(r);
+
+    SDL_Delay(3000);
+    
+    return;
+}
+
 int gameloop() {
     if(SDL_Init(SDL_INIT_VIDEO)) {
         fprintf(stderr, "SDL_ERROR: %s\n", SDL_GetError());
@@ -24,6 +34,8 @@ int gameloop() {
         return 0;
     }
 
+    intro_game(r);
+
     int gl = 1; SDL_Event e;
     while(gl) {
         while (SDL_PollEvent(&e)) {
@@ -39,6 +51,8 @@ int gameloop() {
         SDL_SetRenderDrawColor(r, 255, 0, 0, 255);
         SDL_RenderClear(r);
         SDL_RenderPresent(r);
+        
+        SDL_Delay(16);
     }
 
     SDL_DestroyRenderer(r);

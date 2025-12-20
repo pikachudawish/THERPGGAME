@@ -6,7 +6,6 @@
 #include "hashfuncs.h"
 #include "dbauxfuncs.h"
 
-#define TABLE_SIZE 167
 #define SELECT "SELECT a.id, s.id, s.name, s.class, s.lvl, s.exp, s.max_hp, s.max_mana, s.pd, s.md, m.id, m.move1, m.move2, m.move3, m.move4, e.id, h.id, h.h_name, h.h_lvl, h.h_exp, h.h_defense, c.id, c.c_name, c.c_lvl, c.c_exp, c.c_defense, a2.id, a2.a_name, a2.a_lvl, a2.a_exp, a2.a_defense, b.id, b.b_name, b.b_lvl, b.b_exp, b.b_defense, w.id, w.w_name, w.w_lvl, w.w_exp, w.w_pd, w.w_md FROM adv a INNER JOIN adv_stats s ON a.id_stats = s.id INNER JOIN adv_moves m ON a.id_moves = m.id INNER JOIN adv_equipment e ON a.id_equipment = e.id INNER JOIN helmets h ON e.helmet_id = h.id INNER JOIN chestplates c ON e.chestplate_id  = c.id INNER JOIN armlets a2 ON e.armlet_id = a2.id INNER JOIN boots b ON e.boots_id = b.id INNER JOIN weapons w ON e.weapon_id = w.id;"
 #define DELETE "DELETE FROM adv WHERE id = ?;"
 #define HOST "100.82.64.91"
@@ -16,7 +15,7 @@
 
 int db_to_ht_init_conn(MYSQL* conn, hashtable* ht) {
     unsigned int timeout = 5;
-    if(mysql_options(conn, MYSQL_OPT_CONNECT_TIMEOUT, &timeout)) return 0;
+    if(mysql_options(conn, MYSQL_OPT_CONNECT_TIMEOUT, &timeout)) return 1;
     if(mysql_real_connect(conn, HOST, USER, PASS, DBNAME, 3306, NULL, 0) == NULL) return 0;
     
     adv* aux = (adv*) malloc(sizeof(adv));
