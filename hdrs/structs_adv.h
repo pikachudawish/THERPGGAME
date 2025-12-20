@@ -2,6 +2,7 @@
 #define STRUCTS_ADV_H
 
 typedef struct _helmet_stats {
+    int h_id;
     char name[30];
     int lvl;
     double exp;
@@ -9,6 +10,7 @@ typedef struct _helmet_stats {
 } helmet_stats;
 
 typedef struct _chestplate_stats {
+    int c_id;
     char name[30];
     int lvl;
     double exp;
@@ -16,6 +18,7 @@ typedef struct _chestplate_stats {
 } chestplate_stats;
 
 typedef struct _armlet_stats {
+    int a_id;
     char name[30];
     int lvl;
     double exp;
@@ -23,6 +26,7 @@ typedef struct _armlet_stats {
 } armlet_stats;
 
 typedef struct _boots_stats {
+    int b_id;
     char name[30];
     int lvl;
     double exp;
@@ -30,6 +34,7 @@ typedef struct _boots_stats {
 } boots_stats;
 
 typedef struct _weapon_stats {
+    int w_id;
     char name[30];
     int lvl;
     double exp;
@@ -38,6 +43,7 @@ typedef struct _weapon_stats {
 } weapon_stats;
 
 typedef struct _stats {
+    int s_id;
     char name[30];
     char class[30];
     int lvl;
@@ -49,6 +55,7 @@ typedef struct _stats {
 } stats;
 
 typedef struct _moves {
+    int m_id;
     int move1_id;
     int move2_id;
     int move3_id;
@@ -56,6 +63,7 @@ typedef struct _moves {
 } moves;
 
 typedef struct _equipment {
+    int e_id;
     helmet_stats* h_s;
     chestplate_stats* c_s;
     armlet_stats* a_s;

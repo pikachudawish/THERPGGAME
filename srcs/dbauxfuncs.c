@@ -14,7 +14,7 @@
 #define INS_M "INSERT INTO adv_moves (move1, move2, move3, move4) VALUES (?, ?, ?, ?);"
 #define INS_S "INSERT INTO adv_stats (name, class, lvl, exp, max_hp, max_mana, pd, md) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
 #define INS_ADV "INSERT INTO adv (id_stats, id_moves, id_equipment) VALUES (?, ?, ?);"
-#define UPD_H "UPDATE helmets SET h_name = ?, h_lvl = ?, h_exp = ?, h_defense = ? WHERE id = ?"
+#define UPD_H "UPDATE helmets SET h_id = ?, h_name = ?, h_lvl = ?, h_exp = ?, h_defense = ? WHERE id = ?"
 #define UPD_C "UPDATE chestplate SET c_name = ?, c_lvl = ?, c_exp = ?, c_defense = ? WHERE id = ?"
 #define UPD_A "UPDATE armlets SET a_name = ?, a_lvl = ?, a_exp = ?, a_defense = ? WHERE id = ?"
 #define UPD_B "UPDATE boots SET b_name = ?, b_lvl = ?, b_exp = ?, b_defense = ? WHERE id = ?"
@@ -54,6 +54,7 @@ long ins_helmet_db(MYSQL* conn, helmet_stats* h) {
     long id_helmet = mysql_stmt_insert_id(stmt);
     mysql_stmt_close(stmt);
 
+    h->h_id = id_helmet;
     return id_helmet;
 }
 
@@ -87,6 +88,7 @@ long ins_chestplate_db(MYSQL* conn, chestplate_stats* c) {
     long id_chestplate = mysql_stmt_insert_id(stmt);
     mysql_stmt_close(stmt);
 
+    c->c_id = id_chestplate;
     return id_chestplate;
 }
 
@@ -120,6 +122,7 @@ long ins_armlet_db(MYSQL* conn, armlet_stats* a) {
     long id_armlet = mysql_stmt_insert_id(stmt);
     mysql_stmt_close(stmt);
 
+    a->a_id = id_armlet;
     return id_armlet;
 }
 
@@ -153,6 +156,7 @@ long ins_boots_db(MYSQL* conn, boots_stats* b) {
     long id_boots = mysql_stmt_insert_id(stmt);
     mysql_stmt_close(stmt);
 
+    b->b_id = id_boots;
     return id_boots;
 }
 
@@ -188,6 +192,7 @@ long ins_weapon_db(MYSQL* conn, weapon_stats* w) {
     long id_weapon = mysql_stmt_insert_id(stmt);
     mysql_stmt_close(stmt);
 
+    w->w_id = id_weapon;
     return id_weapon;
 }
 
@@ -229,6 +234,7 @@ long ins_equipment_db(MYSQL* conn, equipment* e) {
     long id_equipment = mysql_stmt_insert_id(stmt);
     mysql_stmt_close(stmt);
 
+    e->e_id = id_equipment;
     return id_equipment;
 }
 
@@ -261,6 +267,7 @@ long ins_moves_db(MYSQL* conn, moves* m) {
     long id_moves = mysql_stmt_insert_id(stmt);
     mysql_stmt_close(stmt);
 
+    m->m_id = id_moves;
     return id_moves;
 }
 
@@ -303,6 +310,7 @@ long ins_stats_db(MYSQL* conn, stats* s) {
     long id_stats = mysql_stmt_insert_id(stmt);
     mysql_stmt_close(stmt);
 
+    s->s_id = id_stats;
     return id_stats;
 }
 
@@ -334,13 +342,42 @@ long ins_adv_db(MYSQL* conn, adv* adventurer) {
         mysql_stmt_close(stmt);
         return 0;
     }
-
+    adventurer->adv_id = mysql_stmt_insert_id(stmt);
+    
     mysql_stmt_close(stmt);
-
+    
     return 1;
 }
 
 int upd_helmet_db(MYSQL* conn, helmet_stats* h) {
+    if(!h) return 0;
+    MYSQL_STMT* stmt = mysql_stmt_init(conn);
+    if(mysql_stmt_prepare(conn, UPD_H, sizeof(UPD_H))) {
+        return 0;
+    }
+
+    MYSQL_BIND bind[5];
+    bind[0].buffer_type = MYSQL_TYPE_STRING;
+    bind[0].buffer = h->name;
+    bind[0].buffer_length = strlen(h->name);
+    bind[1].buffer_type = MYSQL_TYPE_LONG;
+    bind[1].buffer = &h->lvl;
+    bind[2].buffer_type = MYSQL_TYPE_DOUBLE;
+    bind[2].buffer = &h->exp;
+    bind[3].buffer_type = MYSQL_TYPE_LONG;
+    bind[3].buffer = &h->defense;
+    bind[4].buffer_type = MYSQL_TYPE_LONG;
+    bind[4].buffer = &h->h_id;
+    if(mysql_stmt_bind_param(stmt, bind)){
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+    if(mysql_stmt_execute(stmt)) {
+        mysql_stmt_close(stmt);
+        return 0;
+    }
+    
+    mysql_stmt_close(stmt);
 
     return 1;
 }
