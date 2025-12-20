@@ -13,27 +13,27 @@
 int main() {
     hashtable* ht = create_ht();
 
-    /*
+    
     MYSQL* conn = mysql_init(NULL);
     if(!db_to_ht_init_conn(conn, ht)) {
         mysql_close(conn); freeht(ht);
         return 1;
     }
-    */
+    
 
     pthread_t* t_backupdb = (pthread_t*)malloc(sizeof(pthread_t));
     if(!t_backupdb) {
         freeht(ht);
-        //mysql_close(conn); 
+        mysql_close(conn); 
     }
-    pthread_create(t_backupdb, NULL, create_filebackup, NULL);
+    pthread_create(t_backupdb, NULL, create_filebackup, &conn);
 
     if(!gameloop()) {
         freeht(ht); free(t_backupdb); 
-        //mysql_close(conn);
+        mysql_close(conn);
         return 1;
     } 
-    
+
     free(t_backupdb);
     freeht(ht);
     //mysql_close(conn);
