@@ -3,21 +3,20 @@
 #include <string.h>
 #include <mysql/mysql.h>
 
-#include "hashfuncs.h"
-#include "dbauxfuncs.h"
+#include "../../hdrs/structs_adv.h"
+#include "../../hdrs/dbauxfuncs.h"
+
+#define BACKUPDB_PATH "files/backupdb.txt"
+#define LOGS_PATH "files/logs/logs_all.txt"
 
 #define SELECT "SELECT a.id, s.id, s.name, s.class, s.lvl, s.exp, s.max_hp, s.max_mana, s.pd, s.md, m.id, m.move1, m.move2, m.move3, m.move4, e.id, h.id, h.h_name, h.h_lvl, h.h_exp, h.h_defense, c.id, c.c_name, c.c_lvl, c.c_exp, c.c_defense, a2.id, a2.a_name, a2.a_lvl, a2.a_exp, a2.a_defense, b.id, b.b_name, b.b_lvl, b.b_exp, b.b_defense, w.id, w.w_name, w.w_lvl, w.w_exp, w.w_pd, w.w_md FROM adv a INNER JOIN adv_stats s ON a.id_stats = s.id INNER JOIN adv_moves m ON a.id_moves = m.id INNER JOIN adv_equipment e ON a.id_equipment = e.id INNER JOIN helmets h ON e.helmet_id = h.id INNER JOIN chestplates c ON e.chestplate_id  = c.id INNER JOIN armlets a2 ON e.armlet_id = a2.id INNER JOIN boots b ON e.boots_id = b.id INNER JOIN weapons w ON e.weapon_id = w.id;"
-#define DELETE "DELETE FROM adv WHERE id = ?;"
-#define HOST "100.82.64.91"
-#define USER "rpggameadm"
-#define PASS "Ru@25092006"
-#define DBNAME "rpggame"
 
-int db_to_ht_init_conn(MYSQL* conn, hashtable* ht) {
-    unsigned int timeout = 5;
-    if(mysql_options(conn, MYSQL_OPT_CONNECT_TIMEOUT, &timeout)) return 1;
-    if(mysql_real_connect(conn, HOST, USER, PASS, DBNAME, 3306, NULL, 0) == NULL) return 0;
-    
+void* create_filebackup(void* arg) {
+    MYSQL* conn = (MYSQL*)arg;
+    if(!conn) return NULL;
+
+    FILE* f = fopen(BACKUPDB_PATH, "w");
+
     adv* aux = (adv*) malloc(sizeof(adv));
     if(!aux) return 0;
 
@@ -65,12 +64,10 @@ int db_to_ht_init_conn(MYSQL* conn, hashtable* ht) {
         return 0;
     }
 
-    MYSQL_STMT* stmt_adv = mysql_stmt_init(conn);
-    if(mysql_stmt_prepare(stmt_adv, SELECT, strlen(SELECT)) != 0) {
-        free(aux->equipment->b_s); free(aux->equipment->a_s); free(aux->equipment->c_s); free(aux->equipment->h_s); 
-        free(aux->equipment); free(aux->moves); free(aux->stats); free(aux);
-        mysql_stmt_close(stmt_adv);
-        return 0;
+    MYSQL_STMT* stmt = mysql_stmt_init(conn);
+    if(mysql_stmt_prepare(stmt, SELECT, strlen(SELECT))) {
+        mysql_stmt_close(stmt);
+        return NULL;
     }
 
     MYSQL_BIND bind[42];
@@ -166,105 +163,42 @@ int db_to_ht_init_conn(MYSQL* conn, hashtable* ht) {
     bind[40].buffer = &aux->equipment->w_s->physical_dmg;
     bind[41].buffer_type = MYSQL_TYPE_LONG;
     bind[41].buffer = &aux->equipment->w_s->magic_dmg;
-    
-    mysql_stmt_bind_result(stmt_adv, bind);
-    mysql_stmt_execute(stmt_adv); 
-    mysql_stmt_store_result(stmt_adv);
-
-    while(mysql_stmt_fetch(stmt_adv) == 0) {
-        if(!ht_insert(ht, aux)) {
-            free(aux->equipment->b_s); free(aux->equipment->a_s); free(aux->equipment->c_s); free(aux->equipment->h_s); 
-            free(aux->equipment); free(aux->moves); free(aux->stats); free(aux);
-            mysql_stmt_free_result(stmt_adv); mysql_stmt_close(stmt_adv);
-            return 0;
-        }
-    }
-
-    mysql_stmt_free_result(stmt_adv);
-    mysql_stmt_close(stmt_adv);
-    
-    free(aux->equipment->h_s);
-    free(aux->equipment->c_s);
-    free(aux->equipment->a_s);
-    free(aux->equipment->b_s);
-    free(aux->equipment->w_s);
-    free(aux->equipment);
-    free(aux->moves);
-    free(aux->stats);
-    free(aux);
-
-    return 1;
-}
-
-int ins_upd_db(MYSQL* conn, adv* adventurer) {
-    MYSQL_STMT* stmt = mysql_stmt_init(conn);
-    if(mysql_stmt_prepare(stmt, "SELECT 1 FROM adv WHERE id = ?", strlen("SELECT 1 FROM adv WHERE id = ?")) != 0) {
+    if(mysql_stmt_bind_result(stmt, bind)) {
         mysql_stmt_close(stmt);
-        return 0;
+        return NULL;
     }
 
-    int id = adventurer->adv_id;
-    MYSQL_BIND b[1]; 
-    memset(b, 0, sizeof(b));
-    b[0].buffer_type = MYSQL_TYPE_LONG;
-    b[0].buffer = &id;
-
-    mysql_stmt_bind_param(stmt, b);
-    mysql_stmt_execute(stmt);
-    mysql_stmt_store_result(stmt);
-
-    int insorupd = mysql_stmt_fetch(stmt);
-    mysql_autocommit(conn, 0);
-
-    switch(insorupd) {
-        case 0:
-            //Fazer update
-            break;
-
-        case MYSQL_NO_DATA:
-            if(!ins_adv_db(conn, adventurer)) mysql_rollback(conn);
-            break;
-
-        default:
-            mysql_stmt_free_result(stmt);
-            mysql_stmt_close(stmt);
-            mysql_autocommit(conn, 1);
-            return 0;
-    }
-    mysql_stmt_free_result(stmt);
-    mysql_stmt_close(stmt);
-
-    mysql_commit(conn);
-    mysql_autocommit(conn, 1);
-    
-    return 1;
-}
-
-int rmv_adv_db(MYSQL* conn, int adv_id) {
-    mysql_autocommit(conn, 0);
-    
-    MYSQL_STMT* stmt = mysql_stmt_init(conn);
-    if(mysql_stmt_prepare(stmt, DELETE, strlen(DELETE)) != 0) {
-        mysql_rollback(conn); mysql_autocommit(conn, 1); mysql_stmt_close(stmt);
-        return 0;
-    }
-
-    MYSQL_BIND b[1]; 
-    memset(b, 0, sizeof(b));
-    b[0].buffer_type = MYSQL_TYPE_LONG;
-    b[0].buffer = &adv_id;
-    if(mysql_stmt_bind_param(stmt, b)) {
-        mysql_rollback(conn); mysql_autocommit(conn, 1); mysql_stmt_close(stmt);
-        return 0;
-    }
     if(mysql_stmt_execute(stmt)) {
-        mysql_rollback(conn); mysql_autocommit(conn, 1); mysql_stmt_close(stmt);
-        return 0;
+        mysql_stmt_close(stmt);
+        return NULL;
     }
-    mysql_stmt_close(stmt);
+    if(mysql_stmt_store_result(stmt)) {
+        mysql_stmt_close(stmt);
+        return NULL;
+    }
 
-    mysql_commit(conn);
-    mysql_autocommit(conn, 1);
+    fprintf(f, "adv_id;stats_id;name;class;lvl;exp;hp;mana;pd;md;moves_id;move1;move2;move3;move4;equipment_id;helmet_id;h_name;h_lvl;h_exp;h_defense;chestplate_id;c_name;c_lvl;c_exp;c_defense;armlet_id;a_name;a_lvl;a_exp;a_defense;boots_id;b_name;b_lvl;b_exp;b_defense;weapon_id;w_name;w_lvl;w_exp;w_pd;w_md\n");
+    while(mysql_stmt_fetch(stmt) == 0) { 
+        fprintf(f,
+            "%d;%d;%s;%s;%d;%lf;%d;%d;%d;%d;%d;%d;%d;%d;%d;%d;%d;%s;%d;%lf;%d;%d;%s;%d;%lf;%d;%d;%s;%d;%lf;%d;%d;%s;%d;%lf;%d;%d;%s;%d;%lf;%d;%d\n", 
+            aux->adv_id, aux->stats->s_id, aux->stats->name, aux->stats->class, aux->stats->lvl, 
+            aux->stats->exp, aux->stats->max_hp, aux->stats->max_mana, aux->stats->physical_dmg, 
+            aux->stats->magic_dmg, aux->moves->m_id, aux->moves->move1_id, aux->moves->move2_id,
+            aux->moves->move3_id, aux->moves->move4_id, aux->equipment->e_id, aux->equipment->h_s->h_id,
+            aux->equipment->h_s->name, aux->equipment->h_s->lvl, aux->equipment->h_s->exp, aux->equipment->h_s->defense,
+            aux->equipment->c_s->c_id, aux->equipment->c_s->name, aux->equipment->c_s->lvl, aux->equipment->c_s->exp, 
+            aux->equipment->c_s->defense, aux->equipment->a_s->a_id, aux->equipment->a_s->name, aux->equipment->a_s->lvl, 
+            aux->equipment->a_s->exp, aux->equipment->a_s->defense, aux->equipment->b_s->b_id, aux->equipment->b_s->name, 
+            aux->equipment->b_s->lvl, aux->equipment->b_s->exp, aux->equipment->b_s->defense, aux->equipment->w_s->w_id, 
+            aux->equipment->w_s->name, aux->equipment->w_s->lvl, aux->equipment->w_s->exp, aux->equipment->w_s->physical_dmg, 
+            aux->equipment->w_s->magic_dmg); 
+    }
 
-    return 1;
+    fclose(f);
+    mysql_stmt_free_result(stmt);
+    free(aux->equipment->b_s); free(aux->equipment->a_s); free(aux->equipment->c_s); free(aux->equipment->h_s); 
+    free(aux->equipment); free(aux->moves); free(aux->stats); free(aux);
+    mysql_stmt_close(stmt); 
+
+    return NULL;
 }
