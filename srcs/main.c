@@ -2,12 +2,9 @@
 #include <stdlib.h>
 #include <mysql/mysql.h>
 
-#include "../../hdrs/structs_hash.h"
-#include "../../hdrs/freefuncs.h"
-#include "../../hdrs/hashfuncs.h"
-#include "../../hdrs/sdlfuncs.h"
-#include "../../hdrs/dbfuncs.h"
-#include "../../hdrs/filefuncs.h"
+#include "structs_hash.h"
+#include "freefuncs.h"
+#include "hashfuncs.h"
 
 int main(int argc, char* argv[]) {
     hashtable* ht = create_ht();

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../../hdrs/structs_hash.h"
+#include "structs_hash.h"
 
 #define TABLE_SIZE 167
 
