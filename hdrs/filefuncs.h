@@ -2,6 +2,6 @@
 #define FILEFUNCS_H
 
 int new_log(char* log);
-void* create_filebackup(void* arg);
+int create_filebackup(MYSQL* conn);
 
 #endif

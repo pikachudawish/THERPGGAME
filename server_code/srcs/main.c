@@ -4,6 +4,7 @@
 #include <mysql/mysql.h>
 
 #include "../../hdrs/filefuncs.h"
+#include "../../hdrs/auxfuncs.h"
 
 #define HOST "100.82.64.91"
 #define USER "rpggameadm"
@@ -23,13 +24,17 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    pthread_t* t_backupdb = (pthread_t*)malloc(sizeof(pthread_t));
-    if(!t_backupdb) {
+    pthread_t* thread = (pthread_t*)malloc(sizeof(pthread_t));
+    if(!thread) {
         mysql_close(conn);
         return 0;
     }
-    pthread_create(t_backupdb, NULL, create_filebackup, &conn);
+    pthread_create(thread, NULL, wait_input, NULL);
 
+    pthread_join(*thread, NULL);
+
+    free(thread);
+    mysql_close(conn);
 
     return 0;
 }

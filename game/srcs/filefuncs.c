@@ -10,6 +10,7 @@ int new_log(char* log) {
     if(!f) { free(log); return 0;}
 
     fprintf(f, log);
+    free(log);
 
     fclose(f);
     return 1;
