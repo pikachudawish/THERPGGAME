@@ -78,4 +78,10 @@ typedef struct _adv {
     equipment* equipment;
 } adv;
 
+typedef struct _user_info {
+    char user_name[30];
+    char pass[30];
+    adv* adventurer;
+} user_info;
+
 #endif

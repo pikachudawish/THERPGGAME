@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "structs_hash.h"
+#include "../../hdrs/hdrs_structs/structs_hash.h"
 
 #define TABLE_SIZE 167
 
@@ -30,6 +30,7 @@ void freeht(hashtable* ht) {
             free(tmp);
         }
     }
+    
     free(ht->buckets);
     free(ht);
 

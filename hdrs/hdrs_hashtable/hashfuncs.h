@@ -1,7 +1,7 @@
 #ifndef HASHFUNCS_H
 #define HASHFUNCS_H
 
-#include "structs_hash.h"
+#include "../../hdrs/hdrs_structs/structs_hash.h"
 
 hashtable* create_ht();
 unsigned int hash_int(int key);

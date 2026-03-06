@@ -1,21 +1,27 @@
 NAME = rpg_game
 
-CC = gcc
-CFLAGS = -Wall -Wextra -Ihdrs -lSDL2 -lpthread $(shell mysql_config --cflags) 
-LDFLAGS = $(shell mysql_config --libs)
+# --- DIRECTORIES --- #
+SRC_DIRS = srcs/srcs_aux srcs/srcs_game srcs/srcs_server srcs/srcs_hashtable srcs/srcs_processes
+HDR_DIRS = hdrs/hdrs_aux hdrs/hdrs_hashtable hdrs/hdrs_server hdrs/hdrs_structs
 
-SRC_DIR = srcs
+INCLUDE_HDRS = $(addprefix -I, $(HDR_DIRS)) -Ihdrs
+
 OBJ_DIR = obj
-HDR_DIR = hdrs
 
+# --- COMPILER AND FLAGS --- #
+CC = gcc
+CFLAGS = -Wall -Wextra -Ihdrs -lpthread 
+
+# --- SOURCES AND OBJECTS --- #
 SRC = $(wildcard $(SRC_DIR)/*.c)
-
 OBJ = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC))
+vpath %.c $(SRC_DIRS)
 
+# --- COMMANDS --- #
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) -o $(NAME) $(LDFLAGS)
+	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
