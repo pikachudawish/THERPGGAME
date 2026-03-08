@@ -7,6 +7,8 @@
 #include "../../hdrs/hdrs_structs/structs_adv.h"
 #include "../../hdrs/hdrs_structs/structs_server.h"
 
+#include "../../hdrs/hdrs_game/gameauxfuncs.h"
+
 #define GAMENAME "idk"
 
 int gameintro(int cli_socket) {
@@ -24,11 +26,15 @@ int gameintro(int cli_socket) {
 
     switch(playeropt) {
         case 1:
+            if(!logIn(cli_socket)) {
                 
+            }
 
             break;
             
         case 2:
+            createAcc(cli_socket);
+            
             break;
     }
 

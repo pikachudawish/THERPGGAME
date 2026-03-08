@@ -5,6 +5,7 @@
 
 enum pkgtype {
     PKG_HB,
+    PKG_VRF_USERINFO,
     PKG_GET_ADV,
     PKG_INS_UI,
     PKG_ADD_ADV_TO_USER,
@@ -19,21 +20,22 @@ enum pkgtype {
     PKG_UPD_A,
     PKG_UPD_B,
     PKG_UPD_W,
-    PKG_RMV
+    PKG_RMV,
+    PKG_PING_SUCESS,
+    PKG_PING_FAILURE,
 };
 
 typedef struct _package {
     int type;
-    int size;
     union {
-        user_info* ui;
-        adv* adventurer;
-        stats* s;
-        equipment* e;
+        user_info ui;
+        adv adventurer;
+        stats s;
+        equipment e;
         helmet_stats h;
-        chestplate_stats* c;
-        armlet_stats* a;
-        boots_stats* b;
+        chestplate_stats c;
+        armlet_stats a;
+        boots_stats b;
     } data; 
 } package;
 

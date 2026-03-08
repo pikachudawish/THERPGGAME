@@ -79,7 +79,7 @@ typedef struct _adv {
 } adv;
 
 typedef struct _user_info {
-    char user_name[30];
+    char username[30];
     char pass[30];
     adv* adventurer;
 } user_info;
