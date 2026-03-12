@@ -27,13 +27,15 @@ int gameintro(int cli_socket) {
     switch(playeropt) {
         case 1:
             if(!logIn(cli_socket)) {
-                
+                return 0;
             }
 
             break;
             
         case 2:
-            createAcc(cli_socket);
+            if(!createAcc(cli_socket)) {
+                return 0;
+            }
             
             break;
     }

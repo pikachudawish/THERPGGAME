@@ -5,7 +5,8 @@
 
 enum pkgtype {
     PKG_HB,
-    PKG_VRF_USERINFO,
+    PKG_LOGIN_USERINFO,
+    PKG_CREATE_USERINFO,
     PKG_GET_ADV,
     PKG_INS_UI,
     PKG_ADD_ADV_TO_USER,
