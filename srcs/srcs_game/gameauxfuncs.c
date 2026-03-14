@@ -18,7 +18,7 @@ int createAcc(int cli_socket) {
         pkg_send.type = PKG_CREATE_USERINFO;
 
         printf("\nUsername->> ");
-        fgets(pkg_send.data.ui.username, 100, stdin);
+        fgets(pkg_send.data.ui.username, 30, stdin);
         pkg_send.data.ui.username[strcspn(pkg_send.data.ui.username, "\n")] = '\0';
 
         printf("\nPASSWORD REQUIREMENTS:\n1. Atleast one number\n2. Your Password must contain between 6-12 characters\nPassword->> ");
@@ -59,7 +59,7 @@ int createAcc(int cli_socket) {
             return 0;
         }
 
-        package pkg_recv = {.type = 0, .data = NULL};
+        package pkg_recv = {.type = 0};
         if(recv(cli_socket, &pkg_recv, sizeof(package), 0) == -1) {
             printf("\n[ERROR] Couldn't receive pkg from server. Try restarting the game and Contact an Admin to report the issue.");
             printf("\n[ERROR] Critical Game Failure. Shutting down :(\n\n");
@@ -68,16 +68,16 @@ int createAcc(int cli_socket) {
 
         switch(pkg_recv.type) {
             case PKG_PING_SUCESS:
-                currAcc = (user_info*)malloc(sizeof(user_info*));
+                currAcc = (user_info*)malloc(sizeof(user_info));
                 if(!currAcc) {
                     printf("\n[ERROR] Insufficient RAM memory available.");
                     printf("\n[ERROR] Critical Game Failure. Shutting down :(\n\n");
-                    return NULL;
+                    return 0;
                 }
 
                 *currAcc = pkg_send.data.ui;
 
-                printf("\nThe account was created successfully! Welcome, %d ;)", currAcc->username);
+                printf("\nThe account was created successfully! Welcome, %s ;)", currAcc->username);
 
                 successfulCreate = 1;
                 break;
@@ -103,11 +103,11 @@ int logIn(int cli_socket) {
         pkg_send.type = PKG_LOGIN_USERINFO;
 
         printf("\nUsername->> ");
-        fgets(pkg_send.data.ui.username, 100, stdin);
+        fgets(pkg_send.data.ui.username, 30, stdin);
         pkg_send.data.ui.username[strcspn(pkg_send.data.ui.username, "\n")] = '\0';
 
         printf("\nPassword->> ");
-        fgets(pkg_send.data.ui.pass, 100, stdin);
+        fgets(pkg_send.data.ui.pass, 30, stdin);
         pkg_send.data.ui.pass[strcspn(pkg_send.data.ui.pass, "\n")] = '\0';
 
         pkg_send.data.ui.adventurer = NULL;
@@ -118,7 +118,7 @@ int logIn(int cli_socket) {
             return 0;
         }
 
-        package pkg_recv = {.type = 0, .data = NULL};
+        package pkg_recv = {.type = 0};
         if(recv(cli_socket, &pkg_recv, sizeof(package), 0) == -1) {
             printf("\n[ERROR] Couldn't receive pkg from server. Try restarting the game and Contact an Admin to report the issue.");
             printf("\n[ERROR] Critical Game Failure. Shutting down :(\n\n");
@@ -127,16 +127,16 @@ int logIn(int cli_socket) {
 
         switch(pkg_recv.type) {
             case PKG_PING_SUCESS:
-                currAcc = (user_info*)malloc(sizeof(user_info*));
+                currAcc = (user_info*)malloc(sizeof(user_info));
                 if(!currAcc) {
                     printf("\n[ERROR] Insufficient RAM memory available.");
                     printf("\n[ERROR] Critical Game Failure. Shutting down :(\n\n");
-                    return NULL;
+                    return 0;
                 }
 
                 *currAcc = pkg_send.data.ui;
 
-                printf("\nThe Log in was successful! Welcome back, %d ;)", currAcc->username);
+                printf("\nThe Log in was successful! Welcome back, %s ;)\n", currAcc->username);
 
                 successfulLogin = 1;
                 break;
@@ -159,11 +159,11 @@ int logIn(int cli_socket) {
 adv* getAdv(int cli_socket) {
     adv* currAdv = (adv*)malloc(sizeof(adv));
 
-    if(send(cli_socket, &(package){.type = PKG_GET_ADV, .data = NULL}, sizeof(package), 0) == -1) {
+    if(send(cli_socket, &(package){.type = PKG_GET_ADV}, sizeof(package), 0) == -1) {
         return NULL;
     } 
 
-    package pkg_adv = {.type = 0, .data = NULL};
+    package pkg_adv = {.type = 0};
     if(recv(cli_socket, &pkg_adv, sizeof(package), 0) == -1) {
         return NULL;
     }

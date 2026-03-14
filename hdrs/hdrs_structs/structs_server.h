@@ -37,7 +37,8 @@ typedef struct _package {
         chestplate_stats c;
         armlet_stats a;
         boots_stats b;
-    } data; 
+    } data;
+    struct _package* next; 
 } package;
 
 #endif

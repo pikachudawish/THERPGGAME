@@ -19,7 +19,7 @@ int gameintro(int cli_socket) {
     int playeropt = 0;
     while(!playeropt) {
         printf("\n->> ");
-        if(scanf("%d", playeropt) != 1 || (playeropt != 1 && playeropt != 2)) {
+        if(scanf("%d", &playeropt) != 1 || (playeropt != 1 && playeropt != 2)) {
             printf("\nDear Adventure, please choose between Log In (1) and Create Account (2)!");
         }
     }
@@ -29,14 +29,12 @@ int gameintro(int cli_socket) {
             if(!logIn(cli_socket)) {
                 return 0;
             }
-
             break;
             
         case 2:
             if(!createAcc(cli_socket)) {
                 return 0;
             }
-            
             break;
     }
 

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "../../hdrs/hdrs_structs/structs_hash.h"
+#include "../../hdrs/hdrs_structs/structs_server.h"
 
 #define TABLE_SIZE 167
 
@@ -17,6 +18,18 @@ void free_adv(adv* a) {
     free(a->moves);
     free(a);
 
+    return;
+}
+
+void free_sendtask(package* pkg_queue_head) {
+    package* tmp = pkg_queue_head;
+
+    while(tmp != NULL) {
+        package* next_node = tmp->next; 
+        free(tmp); 
+        tmp = next_node;
+    }
+    
     return;
 }
 
