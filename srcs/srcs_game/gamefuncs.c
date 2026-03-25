@@ -42,24 +42,6 @@ int gameintro(int cli_socket) {
 }
 
 int gameloop(int cli_socket) {
-    time_t last_hb = time(NULL);
-
-    int gl = 1;
-    while(gl) {
-        time_t now = time(NULL);
-        if(difftime(now, last_hb) >= 10) {
-            if(send(cli_socket, &(package){.type = PKG_HB}, sizeof(package), 0) == -1) {
-                return 0;
-            }
-            
-            last_hb = time(NULL);
-        }
-
-      
-        
-        
-        
-    }
 
 
     return 1;

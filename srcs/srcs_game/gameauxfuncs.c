@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
+#include <pthread.h>
 
+#include <time.h>
 #include <sys/socket.h>
 
 #include "../../hdrs/hdrs_aux/globalvariables.h"
@@ -14,12 +15,12 @@ int createAcc(int cli_socket) {
 
     int successfulCreate = 0;
     while(!successfulCreate) {
-        package pkg_send;
-        pkg_send.type = PKG_CREATE_USERINFO;
+        package* pkg_send = (package*)malloc(sizeof(package));
+        pkg_send->type = PKG_CREATE_USERINFO;
 
         printf("\nUsername->> ");
-        fgets(pkg_send.data.ui.username, 30, stdin);
-        pkg_send.data.ui.username[strcspn(pkg_send.data.ui.username, "\n")] = '\0';
+        fgets(pkg_send->data.ui.username, 30, stdin);
+        pkg_send->data.ui.username[strcspn(pkg_send->data.ui.username, "\n")] = '\0';
 
         printf("\nPASSWORD REQUIREMENTS:\n1. Atleast one number\n2. Your Password must contain between 6-12 characters\nPassword->> ");
         
@@ -49,15 +50,22 @@ int createAcc(int cli_socket) {
                 acceptedPass = 1;
             }
         }
-        strcpy(pkg_send.data.ui.pass, buffer);
+        strcpy(pkg_send->data.ui.pass, buffer);
 
-        pkg_send.data.ui.adventurer = NULL;
+        pkg_send->data.ui.adventurer = NULL;
 
-        if(send(cli_socket, &pkg_send, sizeof(package), 0) == -1) {
-            printf("\n[ERROR] Couldn't send pkg from server. Try restarting the game and Contact an Admin to report the issue.");
-            printf("\n[ERROR] Critical Game Failure. Shutting down :(\n\n");
-            return 0;
+        pthread_mutex_lock(&send_mutex);
+
+        if(!pkg_queue_tail) { 
+            pkg_queue_head = pkg_send;
+            pkg_queue_tail = pkg_send;
+        } else {
+            pkg_queue_tail->next = pkg_send;
+            pkg_queue_tail = pkg_send;
         }
+
+        pthread_cond_signal(&send_cond);
+        pthread_mutex_unlock(&send_mutex);
 
         package pkg_recv = {.type = 0};
         if(recv(cli_socket, &pkg_recv, sizeof(package), 0) == -1) {
@@ -75,7 +83,7 @@ int createAcc(int cli_socket) {
                     return 0;
                 }
 
-                *currAcc = pkg_send.data.ui;
+                *currAcc = pkg_send->data.ui;
 
                 printf("\nThe account was created successfully! Welcome, %s ;)", currAcc->username);
 
@@ -99,24 +107,31 @@ int logIn(int cli_socket) {
 
     int successfulLogin = 0;
     while(!successfulLogin) {
-        package pkg_send;
-        pkg_send.type = PKG_LOGIN_USERINFO;
+        package* pkg_send = (package*)malloc(sizeof(package));
+        pkg_send->type = PKG_LOGIN_USERINFO;
 
         printf("\nUsername->> ");
-        fgets(pkg_send.data.ui.username, 30, stdin);
-        pkg_send.data.ui.username[strcspn(pkg_send.data.ui.username, "\n")] = '\0';
+        fgets(pkg_send->data.ui.username, 30, stdin);
+        pkg_send->data.ui.username[strcspn(pkg_send->data.ui.username, "\n")] = '\0';
 
         printf("\nPassword->> ");
-        fgets(pkg_send.data.ui.pass, 30, stdin);
-        pkg_send.data.ui.pass[strcspn(pkg_send.data.ui.pass, "\n")] = '\0';
+        fgets(pkg_send->data.ui.pass, 30, stdin);
+        pkg_send->data.ui.pass[strcspn(pkg_send->data.ui.pass, "\n")] = '\0';
 
-        pkg_send.data.ui.adventurer = NULL;
+        pkg_send->data.ui.adventurer = NULL;
 
-        if(send(cli_socket, &pkg_send, sizeof(package), 0) == -1) {
-            printf("\n[ERROR] Couldn't send pkg from server. Try restarting the game and Contact an Admin to report the issue.");
-            printf("\n[ERROR] Critical Game Failure. Shutting down :(\n\n");
-            return 0;
+        pthread_mutex_lock(&send_mutex);
+
+        if(!pkg_queue_tail) { 
+            pkg_queue_head = pkg_send;
+            pkg_queue_tail = pkg_send;
+        } else {
+            pkg_queue_tail->next = pkg_send;
+            pkg_queue_tail = pkg_send;
         }
+
+        pthread_cond_signal(&send_cond);
+        pthread_mutex_unlock(&send_mutex);
 
         package pkg_recv = {.type = 0};
         if(recv(cli_socket, &pkg_recv, sizeof(package), 0) == -1) {
@@ -134,7 +149,7 @@ int logIn(int cli_socket) {
                     return 0;
                 }
 
-                *currAcc = pkg_send.data.ui;
+                *currAcc = pkg_send->data.ui;
 
                 printf("\nThe Log in was successful! Welcome back, %s ;)\n", currAcc->username);
 
