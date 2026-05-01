@@ -30,6 +30,7 @@ void* sendpkg_worker(void* arg) {
         if(send(cli_socket, task, sizeof(*task), 0) < 0) {
             fprintf(stderr, "[ERROR] Failed to send Package (Type: %d)\n", task->type);
         }
+        printf("sent something!");
         
         free(task); 
     }
@@ -45,6 +46,8 @@ void* recvpkg_worker(void* arg) {
         if(recv(cli_socket, pkg_recv, sizeof(*pkg_recv), 0) < 0) {
             //ERROR
         }
+
+        printf("received something!");
 
         switch(pkg_recv->type) {
             case PKG_HB:
@@ -68,8 +71,6 @@ void* recvpkg_worker(void* arg) {
 
                 break;
         }
-
-
     }
     free(pkg_recv);
 

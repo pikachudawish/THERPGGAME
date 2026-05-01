@@ -171,18 +171,3 @@ int logIn(int cli_socket) {
     return 1;
 } 
 
-adv* getAdv(int cli_socket) {
-    adv* currAdv = (adv*)malloc(sizeof(adv));
-
-    if(send(cli_socket, &(package){.type = PKG_GET_ADV}, sizeof(package), 0) == -1) {
-        return NULL;
-    } 
-
-    package pkg_adv = {.type = 0};
-    if(recv(cli_socket, &pkg_adv, sizeof(package), 0) == -1) {
-        return NULL;
-    }
-    
-
-    return currAdv;
-}

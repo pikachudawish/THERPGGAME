@@ -13,7 +13,7 @@
 #include "../../hdrs/hdrs_hashtable/hashfuncs.h"
 #include "../../hdrs/hdrs_processes/threadfuncs.h"
 
-#define N_THREADS 1
+#define N_THREADS 2
 
 int main() {
     int cli_socket = cli_conn();
