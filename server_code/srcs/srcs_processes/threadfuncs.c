@@ -14,7 +14,6 @@
 #include "../../hdrs/hdrs_aux/globalvariable.h"
 
 #include "../../hdrs/hdrs_aux/freefuncs.h"
-#include "../../hdrs/hdrs_db/dbauxfuncs.h"
 #include "../../hdrs/hdrs_db/dbfuncs.h"
 #include "../../hdrs/hdrs_thread/threadfuncs.h"
 

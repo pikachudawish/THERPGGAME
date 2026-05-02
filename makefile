@@ -1,39 +1,39 @@
-SRV = server
-CLI = client
+SRV = server_code/server
+GAME = game_code/game
 
-# --- DIRECTORIES --- #
-SRV_SRC_DIRS = server_codesrcs/srcs_processes server_codesrcs/srcs/srcs_db server_codesrcs/srcs/srcs_server server_codesrcs/srcs/srcs_aux
-SRV_HDR_DIRS = server_codesrcs/hdrs/hdrs_aux server_codesrcs/hdrs/hdrs_db server_codesrcs/hdrs/hdrs_server server_codesrcs/hdrs/hdrs_thread
+# <--- DIRECTORIES ---> #
+SRV_SRC_DIRS = server_code/srcs/srcs_processes server_code/srcs/srcs_db server_code/srcs/srcs_server server_code/srcs/srcs_aux
+SRV_HDR_DIRS = server_code/hdrs/hdrs_aux server_code/hdrs/hdrs_db server_code/hdrs/hdrs_server server_code/hdrs/hdrs_thread
 
-CLI_SRC_DIRS = game_code/srcs/srcs_aux game_code/srcs/srcs_game game_code/srcs/srcs_server game_code/srcs/srcs_hashtable game_code/srcs/srcs_processes
-CLI_HDR_DIRS = game_code/hdrs/hdrs_aux game_code/hdrs/hdrs_hashtable game_code/hdrs/hdrs_server game_code/hdrs/hdrs_structs game_code/hdrs/hdrs_processes
+GAME_SRC_DIRS = game_code/srcs/srcs_aux game_code/srcs/srcs_game game_code/srcs/srcs_server game_code/srcs/srcs_hashtable game_code/srcs/srcs_processes
+GAME_HDR_DIRS = game_code/hdrs/hdrs_aux game_code/hdrs/hdrs_hashtable game_code/hdrs/hdrs_server game_code/hdrs/hdrs_structs game_code/hdrs/hdrs_processes
 
 SRV_INCLUDE_HDRS = $(addprefix -I, $(SRV_HDR_DIRS)) -Ihdrs
-SRV_OBJ_DIR = srv_obj
+SRV_OBJ_DIR = server_code/obj
 
-CLI_INCLUDE_HDRS = $(addprefix -I, $(CLI_HDR_DIRS)) -Ihdrs
-CLI_OBJ_DIR = cli_obj
+GAME_INCLUDE_HDRS = $(addprefix -I, $(GAME_HDR_DIRS)) -Ihdrs
+GAME_OBJ_DIR = game_code/obj
 
-# --- COMPILER AND FLAGS --- #
+# <--- COMPILER AND FLAGS ---> #
 CC = gcc
 SRV_CFLAGS = -Wall -lpthread $(SRV_INCLUDE_HDRS) $(shell mysql_config --cflags)
-CLI_CFLAGS = -Wall -lpthread $(CLI_INCLUDE_HDRS) $(shell mysql_config --cflags)
+GAME_CFLAGS = -Wall -lpthread $(GAME_INCLUDE_HDRS) $(shell mysql_config --cflags)
 
 LDFLAGS = $(shell mysql_config --libs)
 
-# --- SOURCES AND OBJECTS --- #
+# <--- SOURCES AND OBJECTS ---> #
 SRV_SRC = $(foreach dir, $(SRV_SRC_DIRS), $(wildcard $(dir)/*.c))
 SRV_OBJ = $(addprefix $(SRV_OBJ_DIR)/, $(notdir $(SRV_SRC:.c=.o)))
 vpath %.c $(SRV_SRC_DIRS)
 
-CLI_SRC = $(foreach dir, $(CLI_SRC_DIRS), $(wildcard $(dir)/*.c))
-CLI_OBJ = $(addprefix $(CLI_OBJ_DIR)/, $(notdir $(CLI_SRC:.c=.o)))
-vpath %.c $(CLI_SRC_DIRS)
+GAME_SRC = $(foreach dir, $(GAME_SRC_DIRS), $(wildcard $(dir)/*.c))
+GAME_OBJ = $(addprefix $(GAME_OBJ_DIR)/, $(notdir $(GAME_SRC:.c=.o)))
+vpath %.c $(GAME_SRC_DIRS)
 
-# --- COMMANDS --- #
-all: server client
+# <--- ALL ---> #
+all: server game
 
-#<-- server -->#
+# <--- SERVER ---> #
 server: $(SRV_OBJ)
 	$(CC) $(SRV_CFLAGS) $(SRV_OBJ) -o $(SRV) $(LDFLAGS)
 
@@ -44,26 +44,26 @@ $(SRV_OBJ_DIR):
 	mkdir -p $(SRV_OBJ_DIR)
 
 
-#<-- client -->#
-client: $(CLI_OBJ)
-	$(CC) $(CLI_CFLAGS) $(CLI_OBJ) -o $(GAME) $(LDFLAGS)
+# <--- GAME ---> #
+game: $(GAME_OBJ)
+	$(CC) $(GAME_CFLAGS) $(GAME_OBJ) -o $(GAME) $(LDFLAGS)
 
-$(CLI_OBJ_DIR)/%.o: %.c | $(CLI_OBJ_DIR)
-	$(CC) $(CLI_CFLAGS) -c $< -o $@
+$(GAME_OBJ_DIR)/%.o: %.c | $(GAME_OBJ_DIR)
+	$(CC) $(GAME_CFLAGS) -c $< -o $@
 
-$(CLI_OBJ_DIR):
-	mkdir -p $(CLI_OBJ_DIR)
+$(GAME_OBJ_DIR):
+	mkdir -p $(GAME_OBJ_DIR)
 
 
-#<-- clean -->#
-clean: clean_client clean_server
+# <--- CLEAN ---> #
+clean: clean_game clean_server
 
 clean_server:
 	rm -rf $(SRV_OBJ_DIR)
 	rm -f $(SRV)
 
-clean_client:
-	rm -rf $(CLI_OBJ_DIR)
-	rm -f $(CLI)
+clean_game:
+	rm -rf $(GAME_OBJ_DIR)
+	rm -f $(GAME)
 
-.PHONY: all server client clean clean_server clean_client 
+.PHONY: all server game clean clean_server clean_game 

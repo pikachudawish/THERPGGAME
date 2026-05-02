@@ -1,6 +1,8 @@
 .vscode
 vgcore.*
-game
-server
-obj
-files
+game_code/game
+server_code/server
+game_code/obj
+server_code/obj
+game_code/files
+server_code/files
