@@ -11,8 +11,8 @@ pthread_cond_t db_cond = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t send_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t send_cond = PTHREAD_COND_INITIALIZER;
 
-package* pkg_queue_head = NULL;
-package* pkg_queue_tail = NULL;
+packagelist* pkglist_queue_head = NULL;
+packagelist* pkglist_queue_tail = NULL;
 
 dbtask* db_queue_head = NULL;
 dbtask* db_queue_tail = NULL;

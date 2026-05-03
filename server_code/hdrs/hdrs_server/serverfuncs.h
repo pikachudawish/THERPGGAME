@@ -10,6 +10,6 @@
 
 int server_init();
 int server_loop();
-void server_failure(_cliinfo* fdinfo, package* pkg, int pollsize);
+void free_server(_cliinfo* fdinfo, package* pkg, int pollsize);
 
 #endif

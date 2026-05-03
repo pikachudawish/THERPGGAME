@@ -10,8 +10,8 @@ extern int* server;
 extern dbtask* db_queue_head;
 extern dbtask* db_queue_tail;
 
-extern package* pkg_queue_head;
-extern package* pkg_queue_tail;
+extern packagelist* pkglist_queue_head;
+extern packagelist* pkglist_queue_tail;
 
 extern pthread_mutex_t db_mutex;
 extern pthread_cond_t db_cond;

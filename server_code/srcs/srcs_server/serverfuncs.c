@@ -61,7 +61,7 @@ int server_init() {
 int server_loop() {
     int pollsize = POLLSIZE;
 
-    _cliinfo* clinfo = (_cliinfo*)malloc(pollsize * sizeof(_cliinfo));
+    _cliinfo* clinfo = (_cliinfo*)malloc(sizeof(_cliinfo));
     if(!clinfo) {
         fprintf(stderr, "[ERROR] Failed Memory Allocation (clinfo)\n");
         return 0;
@@ -107,10 +107,9 @@ int server_loop() {
     clinfo->last_seen[0] = time(NULL);
 
     while(*server) {
-        int poll_res = 0;
-        if((poll_res = poll(clinfo->poll, pollsize, TIMEOUT_POLL)) == -1) {
+        if(poll(clinfo->poll, pollsize, TIMEOUT_POLL) == -1) {
             fprintf(stderr, "[ERROR] Failed to execute poll()\n");
-            server_failure(clinfo, NULL, pollsize); fclose(log_file); fclose(timeout_file);
+            free_server(clinfo, NULL, pollsize); fclose(log_file); fclose(timeout_file);
             return 0;
         }
 
@@ -131,52 +130,71 @@ int server_loop() {
             if(clinfo->poll[s].fd == -1 || !(clinfo->poll[s].revents & POLLIN)) continue;
 
             if(clinfo->poll[s].fd == serv_socket) {
-                struct sockaddr_in cli_addr;
+                if(clinfo->poll[pollsize - 1].fd != -1) {
+                    pollsize += POLLSIZE;
+            
+                    struct pollfd* tmp_poll = (struct pollfd*)realloc(clinfo->poll, pollsize * sizeof(struct pollfd));
+                    if(!tmp_poll) {
+                        fprintf(stderr, "[ERROR] Failed Memory Reallocation (clinfo->poll)\n");
+                        free_server(clinfo, NULL, pollsize);
+                        return 0;
+                    }
+                    clinfo->poll = tmp_poll;
 
+                    time_t* tmp_last_seen = (time_t*)realloc(clinfo->last_seen, pollsize * sizeof(time_t));
+                    if(!tmp_last_seen) {
+                        fprintf(stderr, "[ERROR] Failed Memory Reallocation (clinfo->last_seen)\n");
+                        free_server(clinfo, NULL, pollsize);
+                        return 0;
+                    }
+                    clinfo->last_seen = tmp_last_seen;
+
+                    for(int r = pollsize-POLLSIZE; r < pollsize; r++) {
+                        clinfo->poll[r].fd = -1;
+                        clinfo->poll[r].events = 0;
+                        clinfo->last_seen[r] = 0;
+                    }
+                }
+
+                struct sockaddr_in cli_addr;
                 socklen_t addr_len = sizeof(cli_addr);
+
                 int new_cli = accept(serv_socket, (struct sockaddr *)&cli_addr, &addr_len);
                 if(new_cli < 0) {
                     fprintf(stderr, "[ERROR] Failed to accept new client connection\n");
                     continue;
                 }
 
+                int insCli = 0;
                 for(int r = 0; r < pollsize; r++) {
                     if(clinfo->poll[r].fd != -1) continue;
                     clinfo->poll[r].fd = new_cli;
                     clinfo->poll[r].events = POLLIN;   
                     clinfo->last_seen[r] = time(NULL);
+                    
+                    insCli = r;
                     break;
                 }      
+                if(!insCli) {
+                    fprintf(stderr, "[ERROR] Failed to accept new client connection\n");
+                    close(clinfo->poll[insCli].fd);
+                    continue;
+                }
+
                 fprintf(log_file, "[LOG] New Connection on socket %d\n", new_cli);
 
-                if(clinfo->poll[pollsize - 1].fd != -1) {
-                    pollsize *= 2;
-                    clinfo = (_cliinfo*)realloc(clinfo, pollsize * sizeof(clinfo));
-                    if(!clinfo) { 
-                        fprintf(stderr, "[ERROR] Failed Memory Reallocation (clinfo)\n");
-                        server_failure(clinfo, NULL, pollsize/2);
-                        return 0;
-                    }
-                    clinfo->poll = (struct pollfd*)realloc(clinfo->poll, pollsize * sizeof(struct pollfd));
-                    if(!clinfo->poll) {
-                        fprintf(stderr, "[ERROR] Failed Memory Reallocation (clinfo->poll)\n");
-                        server_failure(clinfo, NULL, pollsize/2);
-                        return 0;
-                    }
-                    clinfo->last_seen = (time_t*)realloc(clinfo->last_seen, pollsize * sizeof(time_t));
-                    if(!clinfo->last_seen) {
-                        fprintf(stderr, "[ERROR] Failed Memory Reallocation (clinfo->last_seen)\n");
-                        server_failure(clinfo, NULL, pollsize);
-                        return 0;
-                    }
-                }
             } else {
                 package* pkg = (package*)malloc(sizeof(package));
+                if(!pkg) {
+                    fprintf(stderr, "[ERROR] Failed Memory Allocation (pkg)\n");
+                    free_server(clinfo, NULL, pollsize);
+                    return 0;
+                }
 
                 int nbytes = recv(clinfo->poll[s].fd, pkg, sizeof(package), 0);
                 if(nbytes <= 0) {
                     fprintf(log_file, "[CONNECTION TERMINATED] Client %d disconnected\n", clinfo->poll[s].fd);
-                    close(clinfo->poll[s].fd);
+                    free(pkg); close(clinfo->poll[s].fd);
                     clinfo->poll[s].fd = -1;
                     continue;
                 }
@@ -189,97 +207,108 @@ int server_loop() {
                         break;
                     case PKG_GET_ADV:
                         if(!pkg_get_adv(clinfo->poll[s].fd, pkg)) {
-                            server_failure(clinfo, pkg, pollsize);
+                            free_server(clinfo, pkg, pollsize);
                             fclose(timeout_file); fclose(log_file);
                             return 0;
                         }
                         break;                    
                     case PKG_INS_UI:
                         if(!pkg_ins_ui(clinfo->poll[s].fd, pkg)) {
-                            server_failure(clinfo, pkg, pollsize);
+                            free_server(clinfo, pkg, pollsize);
                             fclose(timeout_file); fclose(log_file);
                             return 0;
                         }
                         break;
                     case PKG_ADD_ADV_TO_USER:
                         if(!pkg_add_adv_to_user(clinfo->poll[s].fd, pkg)) {
-                            server_failure(clinfo, pkg, pollsize);
+                            free_server(clinfo, pkg, pollsize);
                             fclose(timeout_file); fclose(log_file);
                             return 0;
                         }
                         break;
                     case PKG_INS:
                         if(!pkg_ins(clinfo->poll[s].fd, pkg)) {
-                            server_failure(clinfo, pkg, pollsize);
+                            free_server(clinfo, pkg, pollsize);
                             fclose(timeout_file); fclose(log_file);
                             return 0;
                         }
                         break;
                     case PKG_UPD_ADV:
                         if(!pkg_upd_adv(clinfo->poll[s].fd, pkg)) {
-                            server_failure(clinfo, pkg, pollsize);
+                            free_server(clinfo, pkg, pollsize);
                             fclose(timeout_file); fclose(log_file);
+                            return 0;
                         }
                         break;
                     case PKG_UPD_S:
                         if(!pkg_upd_s(clinfo->poll[s].fd, pkg)) {
-                            server_failure(clinfo, pkg, pollsize);
+                            free_server(clinfo, pkg, pollsize);
                             fclose(timeout_file); fclose(log_file);
+                            return 0;
                         }
                         break;
                     case PKG_UPD_M:
                         if(!pkg_upd_m(clinfo->poll[s].fd, pkg)) {
-                            server_failure(clinfo, pkg, pollsize);
+                            free_server(clinfo, pkg, pollsize);
                             fclose(timeout_file); fclose(log_file);
+                            return 0;
                         }
                         break;
                     case PKG_UPD_E:
                         if(!pkg_upd_e(clinfo->poll[s].fd, pkg)) {
-                            server_failure(clinfo, pkg, pollsize);
+                            free_server(clinfo, pkg, pollsize);
                             fclose(timeout_file); fclose(log_file);
+                            return 0;
                         }
                         break;
                     case PKG_UPD_H:
                         if(!pkg_upd_h(clinfo->poll[s].fd, pkg)) {
-                            server_failure(clinfo, pkg, pollsize);
+                            free_server(clinfo, pkg, pollsize);
                             fclose(timeout_file); fclose(log_file);
+                            return 0;
                         }
                         break;
                     case PKG_UPD_C:
                         if(!pkg_upd_c(clinfo->poll[s].fd, pkg)) {
-                            server_failure(clinfo, pkg, pollsize);
+                            free_server(clinfo, pkg, pollsize);
                             fclose(timeout_file); fclose(log_file);
+                            return 0;
                         }
                         break;
                     case PKG_UPD_A:
                         if(!pkg_upd_a(clinfo->poll[s].fd, pkg)) {
-                            server_failure(clinfo, pkg, pollsize);
+                            free_server(clinfo, pkg, pollsize);
                             fclose(timeout_file); fclose(log_file);
+                            return 0;
                         }
                         break;
                     case PKG_UPD_B:
                         if(!pkg_upd_b(clinfo->poll[s].fd, pkg)) {
-                            server_failure(clinfo, pkg, pollsize);
+                            free_server(clinfo, pkg, pollsize);
                             fclose(timeout_file); fclose(log_file);
+                            return 0;
                         }
                         break;
                     case PKG_UPD_W:
                         if(!pkg_upd_w(clinfo->poll[s].fd, pkg)) {
-                            server_failure(clinfo, pkg, pollsize);
+                            free_server(clinfo, pkg, pollsize);
                             fclose(timeout_file); fclose(log_file);
+                            return 0;
                         }
                         break;
                     case PKG_RMV:
                         if(!pkg_rmv(clinfo->poll[s].fd, pkg)) {
-                            server_failure(clinfo, pkg, pollsize);
+                            free_server(clinfo, pkg, pollsize);
                             fclose(timeout_file); fclose(log_file);
+                            return 0;
                         }
                         break;
 
                     case PKG_LOGIN_USERINFO:
                         if(!pkg_vrf_ui(clinfo->poll[s].fd, pkg)) {
-                            server_failure(clinfo, pkg, pollsize);
+                            free_server(clinfo, pkg, pollsize);
                             fclose(timeout_file); fclose(log_file);
+                            return 0;
                         }
                         break;
                 }
@@ -300,11 +329,11 @@ int server_loop() {
     return 1;
 }
 
-void server_failure(_cliinfo* clinfo, package* pkg, int pollsize) {
-    if(clinfo->last_seen) free(clinfo->last_seen); 
+void free_server(_cliinfo* clinfo, package* pkg, int pollsize) {
+    if(clinfo && clinfo->last_seen) free(clinfo->last_seen); 
     if(pkg) free(pkg);
 
-    if(clinfo->poll) {
+    if(clinfo && clinfo->poll) {
         for(int s = 0; s < pollsize; s++) {
             if(clinfo->poll[s].fd != -1) close(clinfo->poll[s].fd);
         }

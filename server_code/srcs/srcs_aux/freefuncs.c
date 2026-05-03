@@ -33,11 +33,11 @@ void free_dbtask(dbtask* db_queue_head) {
     return;
 }
 
-void free_sendtask(package* pkg_queue_head) {
-    package* tmp = pkg_queue_head;
+void free_sendtask(packagelist* pkglist_queue_head) {
+    packagelist* tmp = pkglist_queue_head;
 
     while(tmp != NULL) {
-        package* next_node = tmp->next; 
+        packagelist* next_node = tmp->next; 
         free(tmp); 
         tmp = next_node;
     }

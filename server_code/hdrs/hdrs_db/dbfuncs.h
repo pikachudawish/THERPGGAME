@@ -32,7 +32,7 @@
 #define UPD_ADV "UPDATE adv SET id_stats = ?, id_moves = ?, id_equipment = ? WHERE id = ?;"
 #define UPD_U "UPDATE userinfo SET username = ?, pass = ?, adv = ?; WHERE id = ?;"
 
-adv* get_adv_db(MYSQL* conn, char* username);
+adv get_adv_db(MYSQL* conn, char* username);
 
 long vrf_ui_db(MYSQL* conn, user_info* ui);
 

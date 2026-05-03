@@ -11,7 +11,7 @@ long vrf_ui_db(MYSQL* conn, user_info* ui) {
     return 1;
 }
 
-adv* get_adv_db(MYSQL* conn, char* username) {
+adv get_adv_db(MYSQL* conn, char* username) {
     if(!username) return NULL;
 
     adv* aux = (adv*) malloc(sizeof(adv));

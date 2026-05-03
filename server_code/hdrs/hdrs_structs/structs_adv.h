@@ -64,25 +64,25 @@ typedef struct _moves {
 
 typedef struct _equipment {
     int e_id;
-    helmet_stats* h_s;
-    chestplate_stats* c_s;
-    armlet_stats* a_s;
-    boots_stats* b_s;
-    weapon_stats* w_s;
+    helmet_stats h_s;
+    chestplate_stats c_s;
+    armlet_stats a_s;
+    boots_stats b_s;
+    weapon_stats w_s;
 } equipment;
 
 typedef struct _adv {
     int adv_id;
-    stats* stats;
-    moves* moves;
-    equipment* equipment;
+    stats stats;
+    moves moves;
+    equipment equipment;
 } adv;
 
 typedef struct _user_info {
     int id;
     char user_name[30];
     char pass[30];
-    adv* adventurer;
+    adv adventurer;
 } user_info;
 
 #endif

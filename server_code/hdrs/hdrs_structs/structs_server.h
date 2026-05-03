@@ -40,19 +40,24 @@ typedef struct _package {
     int cli_fd;
     union {
         int ids;
-        user_info* ui;
-        adv* adventurer;
-        stats* s;
-        moves* m;
-        equipment* e;
-        helmet_stats* h;
-        chestplate_stats* c;
-        armlet_stats* a;
-        boots_stats* b;
-        weapon_stats* w;
+        user_info ui;
+        adv adventurer;
+        stats s;
+        moves m;
+        equipment e;
+        helmet_stats h;
+        chestplate_stats c;
+        armlet_stats a;
+        boots_stats b;
+        weapon_stats w;
     } data;
     struct _package* next; 
 } package;
+
+typedef struct _packagelist {
+    package pkg;
+    struct _packagelist* next
+} packagelist;
 
 enum dbtasktype {
     DBTASK_GET_ADV,

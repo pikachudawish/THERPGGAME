@@ -334,30 +334,30 @@ void* db_worker(void* arg) {
             case DBTASK_GET_ADV:
                 char* username = (char*)task->data;
 
-                adv* data = NULL;
-                if(!(data = get_adv_db(conn, username))) {
+                adv data = get_adv_db(conn, username);
+                if(data.adv_id == -1) {
                     fprintf(logdb_file, "[ERROR] Aborted rallying adv information about client: %d\n", task->client_fd);
                     fprintf(stderr, "[ERROR] Aborted rallying adv information about client: %d\n", task->client_fd);
                     break;
                 }
                 fprintf(logdb_file, "[DB] Successfully got adv info for cli: %d\n", task->client_fd);
 
-                package* new_task = (package*)malloc(sizeof(package));
+                packagelist* new_task = (package*)malloc(sizeof(package));
                 if(!new_task) return 0;
 
-                new_task->type = PKG_GET_ADV;
-                new_task->cli_fd = task->client_fd;
-                new_task->data.adventurer = data;
+                new_task->pkg.type = PKG_GET_ADV;
+                new_task->pkg.cli_fd = task->client_fd;
+                new_task->pkg.data.adventurer = data;
                 new_task->next = NULL;
 
                 pthread_mutex_lock(&send_mutex);
 
-                if(!pkg_queue_tail) { 
-                    pkg_queue_head = new_task;
-                    pkg_queue_tail = new_task;
+                if(!pkglist_queue_tail) { 
+                    pkglist_queue_head = new_task;
+                    pkglist_queue_tail = new_task;
                 } else {
-                    pkg_queue_tail->next = new_task;
-                    pkg_queue_tail = new_task;
+                    pkglist_queue_tail->next = new_task;
+                    pkglist_queue_tail = new_task;
                 }
 
                 pthread_cond_signal(&send_cond);
@@ -499,31 +499,31 @@ void* sendpkg_worker(void* arg) {
     FILE* logsend_file = fopen(LOG_SEND, "a");
     if(!logsend_file) return NULL;
 
-    while(*server || (pkg_queue_head != NULL)) {
+    while(*server || (pkglist_queue_head != NULL)) {
         pthread_mutex_lock(&send_mutex);
 
-        while(!pkg_queue_head) {
+        while(!pkglist_queue_head) {
             pthread_cond_wait(&send_cond, &send_mutex);
             if(!(*server)) {
-                free_sendtask(pkg_queue_head);
+                free_sendtask(pkglist_queue_head);
                 fclose(logsend_file); 
                 return NULL;
             }
         }
 
-        package* task = pkg_queue_head;
-        pkg_queue_head = task->next;
-        if(!pkg_queue_head) pkg_queue_tail = NULL;
+        packagelist* task = pkglist_queue_head;
+        pkglist_queue_head = task->next;
+        if(!pkglist_queue_head) pkglist_queue_tail = NULL;
 
         pthread_mutex_unlock(&send_mutex); 
 
-        switch(task->type) {
+        switch(task->pkg.type) {
             case PKG_GET_ADV:
-                if(send(task->cli_fd, task, sizeof(*task), 0) < 0) {
-                    fprintf(logsend_file, "[ERROR] Failed to send the pkg to cli: %d\n", task->cli_fd);
+                if(send(task->pkg.cli_fd, &task->pkg, sizeof(task->pkg), 0) < 0) {
+                    fprintf(logsend_file, "[ERROR] Failed to send the pkg to cli: %d\n", task->pkg.cli_fd);
                     break;
                 }
-                fprintf(logsend_file, "[SUCESS] Pkg sent to cli: %d\n", task->cli_fd);
+                fprintf(logsend_file, "[SUCESS] Pkg sent to cli: %d\n", task->pkg.cli_fd);
                 break;
             
         }
