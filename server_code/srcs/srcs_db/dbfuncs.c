@@ -12,62 +12,14 @@ long vrf_ui_db(MYSQL* conn, user_info* ui) {
 }
 
 adv get_adv_db(MYSQL* conn, char* username) {
-    if(!username) return NULL;
+    if(!username) return (adv){.adv_id = -1};
 
-    adv* aux = (adv*) malloc(sizeof(adv));
-    if(!aux) return NULL;
-
-    aux->stats = (stats*)malloc(sizeof(stats));
-    if(!aux->stats) {
-        free(aux);
-        return NULL;
-    }
-    aux->moves = (moves*)malloc(sizeof(moves));
-    if(!aux->moves) {
-        free(aux->stats); free(aux);
-        return NULL;
-    }
-    aux->equipment = (equipment*)malloc(sizeof(equipment));
-    if(!aux->equipment) {
-        free(aux->moves); free(aux->stats); free(aux->equipment->b_s); free(aux->equipment->a_s); free(aux->equipment->c_s); 
-        free(aux->equipment->h_s); free(aux->equipment); free(aux->moves); free(aux->stats); free(aux);
-        return NULL;
-    }
-    aux->equipment->h_s = (helmet_stats*)malloc(sizeof(helmet_stats));
-    if(!aux->equipment->h_s) {
-        free(aux->equipment); free(aux->moves); free(aux->stats); free(aux);
-        return NULL;
-    }
-    aux->equipment->c_s = (chestplate_stats*)malloc(sizeof(chestplate_stats));
-    if(!aux->equipment->c_s) {
-        free(aux->equipment->h_s); free(aux->equipment); free(aux->moves); free(aux->stats); free(aux);
-        return NULL;
-    }
-    aux->equipment->a_s = (armlet_stats*)malloc(sizeof(armlet_stats));
-    if(!aux->equipment->a_s) {
-        free(aux->equipment->c_s); free(aux->equipment->h_s); free(aux->equipment); 
-        free(aux->moves); free(aux->stats); free(aux);
-        return NULL;
-    }
-    aux->equipment->b_s = (boots_stats*)malloc(sizeof(boots_stats));
-    if(!aux->equipment->b_s) {
-        free(aux->equipment->a_s); free(aux->equipment->c_s); free(aux->equipment->h_s); 
-        free(aux->equipment); free(aux->moves); free(aux->stats); free(aux);
-        return NULL;
-    }
-    aux->equipment->w_s = (weapon_stats*)malloc(sizeof(weapon_stats));
-    if(!aux->equipment->w_s) {
-        free(aux->equipment->b_s); free(aux->equipment->a_s); free(aux->equipment->c_s); free(aux->equipment->h_s); 
-        free(aux->equipment); free(aux->moves); free(aux->stats); free(aux); 
-        return NULL;
-    }
+    adv aux;
 
     MYSQL_STMT* stmt = mysql_stmt_init(conn);
     if(mysql_stmt_prepare(stmt, GET_ADV, strlen(GET_ADV))) {
-        free(aux->equipment->b_s); free(aux->equipment->a_s); free(aux->equipment->c_s); free(aux->equipment->h_s); 
-        free(aux->equipment); free(aux->moves); free(aux->stats); free(aux);
         mysql_stmt_close(stmt);
-        return NULL;
+        return (adv){.adv_id = -1};
     }   
 
     MYSQL_BIND bind_param[1];
@@ -76,201 +28,126 @@ adv get_adv_db(MYSQL* conn, char* username) {
     bind_param[0].buffer = username;
     bind_param[0].buffer_length = strlen(username);
     if(mysql_stmt_bind_param(stmt, bind_param)){
-        free(aux->equipment->b_s); free(aux->equipment->a_s); free(aux->equipment->c_s); free(aux->equipment->h_s); 
-        free(aux->equipment); free(aux->moves); free(aux->stats); free(aux);
         mysql_stmt_close(stmt);
-        return NULL;
+        return (adv){.adv_id = -1};
     }
 
     MYSQL_BIND bind_res[42];
     memset(bind_res, 0, sizeof(bind_res));
     bind_res[0].buffer_type = MYSQL_TYPE_LONG;
-    bind_res[0].buffer = &aux->adv_id;
+    bind_res[0].buffer = &aux.adv_id;
     bind_res[1].buffer_type = MYSQL_TYPE_LONG;
-    bind_res[1].buffer = &aux->stats->s_id;
+    bind_res[1].buffer = &aux.stats.s_id;
     bind_res[2].buffer_type = MYSQL_TYPE_STRING;
-    bind_res[2].buffer = aux->stats->name;
-    bind_res[2].buffer_length = sizeof(aux->stats->name);
+    bind_res[2].buffer = aux.stats.name;
+    bind_res[2].buffer_length = sizeof(aux.stats.name);
     bind_res[3].buffer_type = MYSQL_TYPE_STRING;
-    bind_res[3].buffer = aux->stats->class;
-    bind_res[3].buffer_length = sizeof(aux->stats->class);
+    bind_res[3].buffer = aux.stats.class;
+    bind_res[3].buffer_length = sizeof(aux.stats.class);
     bind_res[4].buffer_type = MYSQL_TYPE_LONG;
-    bind_res[4].buffer = &aux->stats->lvl;
+    bind_res[4].buffer = &aux.stats.lvl;
     bind_res[5].buffer_type = MYSQL_TYPE_DOUBLE;
-    bind_res[5].buffer = &aux->stats->exp;
+    bind_res[5].buffer = &aux.stats.exp;
     bind_res[6].buffer_type = MYSQL_TYPE_LONG;
-    bind_res[6].buffer = &aux->stats->max_hp;
+    bind_res[6].buffer = &aux.stats.max_hp;
     bind_res[7].buffer_type = MYSQL_TYPE_LONG;
-    bind_res[7].buffer = &aux->stats->max_mana;
+    bind_res[7].buffer = &aux.stats.max_mana;
     bind_res[8].buffer_type = MYSQL_TYPE_LONG;
-    bind_res[8].buffer = &aux->stats->physical_dmg;
+    bind_res[8].buffer = &aux.stats.physical_dmg;
     bind_res[9].buffer_type = MYSQL_TYPE_LONG;
-    bind_res[9].buffer = &aux->stats->magic_dmg;
+    bind_res[9].buffer = &aux.stats.magic_dmg;
     bind_res[10].buffer_type = MYSQL_TYPE_LONG;
-    bind_res[10].buffer = &aux->moves->m_id;
+    bind_res[10].buffer = &aux.moves.m_id;
     bind_res[11].buffer_type = MYSQL_TYPE_LONG;
-    bind_res[11].buffer = &aux->moves->move1_id;
+    bind_res[11].buffer = &aux.moves.move1_id;
     bind_res[12].buffer_type = MYSQL_TYPE_LONG;
-    bind_res[12].buffer = &aux->moves->move2_id;
+    bind_res[12].buffer = &aux.moves.move2_id;
     bind_res[13].buffer_type = MYSQL_TYPE_LONG;
-    bind_res[13].buffer = &aux->moves->move3_id;
+    bind_res[13].buffer = &aux.moves.move3_id;
     bind_res[14].buffer_type = MYSQL_TYPE_LONG;
-    bind_res[14].buffer = &aux->moves->move4_id;
+    bind_res[14].buffer = &aux.moves.move4_id;
     bind_res[15].buffer_type = MYSQL_TYPE_LONG;
-    bind_res[15].buffer = &aux->equipment->e_id;
+    bind_res[15].buffer = &aux.equipment.e_id;
     bind_res[16].buffer_type = MYSQL_TYPE_LONG;
-    bind_res[16].buffer = &aux->equipment->h_s->h_id;
+    bind_res[16].buffer = &aux.equipment.h_s.h_id;
     bind_res[17].buffer_type = MYSQL_TYPE_STRING;
-    bind_res[17].buffer = aux->equipment->h_s->name;
-    bind_res[17].buffer_length = sizeof(aux->equipment->h_s->name);
+    bind_res[17].buffer = aux.equipment.h_s.name;
+    bind_res[17].buffer_length = sizeof(aux.equipment.h_s.name);
     bind_res[18].buffer_type = MYSQL_TYPE_LONG;
-    bind_res[18].buffer = &aux->equipment->h_s->lvl;
+    bind_res[18].buffer = &aux.equipment.h_s.lvl;
     bind_res[19].buffer_type = MYSQL_TYPE_DOUBLE;
-    bind_res[19].buffer = &aux->equipment->h_s->exp;
+    bind_res[19].buffer = &aux.equipment.h_s.exp;
     bind_res[20].buffer_type = MYSQL_TYPE_LONG;
-    bind_res[20].buffer = &aux->equipment->h_s->defense;
+    bind_res[20].buffer = &aux.equipment.h_s.defense;
     bind_res[21].buffer_type = MYSQL_TYPE_LONG;
-    bind_res[21].buffer = &aux->equipment->c_s->c_id;
+    bind_res[21].buffer = &aux.equipment.c_s.c_id;
     bind_res[22].buffer_type = MYSQL_TYPE_STRING;
-    bind_res[22].buffer = aux->equipment->c_s->name;
-    bind_res[22].buffer_length = sizeof(aux->equipment->c_s->name);
+    bind_res[22].buffer = aux.equipment.c_s.name;
+    bind_res[22].buffer_length = sizeof(aux.equipment.c_s.name);
     bind_res[23].buffer_type = MYSQL_TYPE_LONG;
-    bind_res[23].buffer = &aux->equipment->c_s->lvl;
+    bind_res[23].buffer = &aux.equipment.c_s.lvl;
     bind_res[24].buffer_type = MYSQL_TYPE_DOUBLE;
-    bind_res[24].buffer = &aux->equipment->c_s->exp;
+    bind_res[24].buffer = &aux.equipment.c_s.exp;
     bind_res[25].buffer_type = MYSQL_TYPE_LONG;
-    bind_res[25].buffer = &aux->equipment->c_s->defense;
+    bind_res[25].buffer = &aux.equipment.c_s.defense;
     bind_res[26].buffer_type = MYSQL_TYPE_LONG;
-    bind_res[26].buffer = &aux->equipment->a_s->a_id;
+    bind_res[26].buffer = &aux.equipment.a_s.a_id;
     bind_res[27].buffer_type = MYSQL_TYPE_STRING;
-    bind_res[27].buffer = aux->equipment->a_s->name;
-    bind_res[27].buffer_length = sizeof(aux->equipment->a_s->name);
+    bind_res[27].buffer = aux.equipment.a_s.name;
+    bind_res[27].buffer_length = sizeof(aux.equipment.a_s.name);
     bind_res[28].buffer_type = MYSQL_TYPE_LONG;
-    bind_res[28].buffer = &aux->equipment->a_s->lvl;
+    bind_res[28].buffer = &aux.equipment.a_s.lvl;
     bind_res[29].buffer_type = MYSQL_TYPE_DOUBLE;
-    bind_res[29].buffer = &aux->equipment->a_s->exp;
+    bind_res[29].buffer = &aux.equipment.a_s.exp;
     bind_res[30].buffer_type = MYSQL_TYPE_LONG;
-    bind_res[30].buffer = &aux->equipment->a_s->defense;
+    bind_res[30].buffer = &aux.equipment.a_s.defense;
     bind_res[31].buffer_type = MYSQL_TYPE_LONG;
-    bind_res[31].buffer = &aux->equipment->b_s->b_id;
+    bind_res[31].buffer = &aux.equipment.b_s.b_id;
     bind_res[32].buffer_type = MYSQL_TYPE_STRING;
-    bind_res[32].buffer = aux->equipment->b_s->name;
-    bind_res[32].buffer_length = sizeof(aux->equipment->b_s->name);
+    bind_res[32].buffer = aux.equipment.b_s.name;
+    bind_res[32].buffer_length = sizeof(aux.equipment.b_s.name);
     bind_res[33].buffer_type = MYSQL_TYPE_LONG;
-    bind_res[33].buffer = &aux->equipment->b_s->lvl;
+    bind_res[33].buffer = &aux.equipment.b_s.lvl;
     bind_res[34].buffer_type = MYSQL_TYPE_DOUBLE;
-    bind_res[34].buffer = &aux->equipment->b_s->exp;
+    bind_res[34].buffer = &aux.equipment.b_s.exp;
     bind_res[35].buffer_type = MYSQL_TYPE_LONG;
-    bind_res[35].buffer = &aux->equipment->b_s->defense;
+    bind_res[35].buffer = &aux.equipment.b_s.defense;
     bind_res[36].buffer_type = MYSQL_TYPE_LONG;
-    bind_res[36].buffer = &aux->equipment->w_s->w_id;
+    bind_res[36].buffer = &aux.equipment.w_s.w_id;
     bind_res[37].buffer_type = MYSQL_TYPE_STRING;
-    bind_res[37].buffer = aux->equipment->w_s->name;
-    bind_res[37].buffer_length = sizeof(aux->equipment->w_s->name);
+    bind_res[37].buffer = aux.equipment.w_s.name;
+    bind_res[37].buffer_length = sizeof(aux.equipment.w_s.name);
     bind_res[38].buffer_type = MYSQL_TYPE_LONG;
-    bind_res[38].buffer = &aux->equipment->w_s->lvl;
+    bind_res[38].buffer = &aux.equipment.w_s.lvl;
     bind_res[39].buffer_type = MYSQL_TYPE_DOUBLE;
-    bind_res[39].buffer = &aux->equipment->w_s->exp;
+    bind_res[39].buffer = &aux.equipment.w_s.exp;
     bind_res[40].buffer_type = MYSQL_TYPE_LONG;
-    bind_res[40].buffer = &aux->equipment->w_s->physical_dmg;
+    bind_res[40].buffer = &aux.equipment.w_s.physical_dmg;
     bind_res[41].buffer_type = MYSQL_TYPE_LONG;
-    bind_res[41].buffer = &aux->equipment->w_s->magic_dmg;
+    bind_res[41].buffer = &aux.equipment.w_s.magic_dmg;
     
     if(mysql_stmt_bind_result(stmt, bind_res)) {
-        free(aux->equipment->b_s); free(aux->equipment->a_s); free(aux->equipment->c_s); free(aux->equipment->h_s); 
-        free(aux->equipment); free(aux->moves); free(aux->stats); free(aux);
         mysql_stmt_close(stmt);
-        return NULL;
+        return (adv){.adv_id = -1};;
     }
     if(mysql_stmt_execute(stmt)) {
-        free(aux->equipment->b_s); free(aux->equipment->a_s); free(aux->equipment->c_s); free(aux->equipment->h_s); 
-        free(aux->equipment); free(aux->moves); free(aux->stats); free(aux);
         mysql_stmt_close(stmt);
-        return NULL;
+        return (adv){.adv_id = -1};;
     }
     if(mysql_stmt_store_result(stmt)) {
-        free(aux->equipment->b_s); free(aux->equipment->a_s); free(aux->equipment->c_s); free(aux->equipment->h_s); 
-        free(aux->equipment); free(aux->moves); free(aux->stats); free(aux);
         mysql_stmt_close(stmt);
-        return NULL;
+        return (adv){.adv_id = -1};
     }
     if(mysql_stmt_fetch(stmt)) {
-        free(aux->equipment->b_s); free(aux->equipment->a_s); free(aux->equipment->c_s); free(aux->equipment->h_s); 
-        free(aux->equipment); free(aux->moves); free(aux->stats); free(aux);
         mysql_stmt_free_result(stmt);
         mysql_stmt_close(stmt);
-        return NULL;
+        return (adv){.adv_id = -1};
     }
-
-    adv* cpy = (adv*)malloc(sizeof(adv));
-    if(!cpy) {
-        return NULL;
-    }
-    cpy->adv_id = aux->adv_id;
-
-    cpy->stats = (stats*)malloc(sizeof(stats));
-    if(!cpy->stats) {
-        free(cpy); 
-        return NULL;
-    }
-    *(cpy->stats) = *(aux->stats);
-
-    cpy->moves = (moves*)malloc(sizeof(moves));
-    if(!cpy->moves) {
-        free(cpy->stats); free(cpy); 
-        return NULL;
-    }
-    *(cpy->moves) = *(aux->moves);
-
-    cpy->equipment = (equipment*)malloc(sizeof(equipment));
-    if(!cpy->equipment) {
-        free(cpy->moves); free(cpy->stats); free(cpy); 
-        return NULL;
-    }
-
-    cpy->equipment->h_s = (helmet_stats*) malloc(sizeof(helmet_stats));
-    if(!cpy->equipment->h_s) {
-        free(cpy->equipment); free(cpy->moves); free(cpy->stats); free(cpy); 
-        return NULL;
-    }
-    *(cpy->equipment->h_s) = *(aux->equipment->h_s);
-
-    cpy->equipment->c_s = (chestplate_stats*) malloc(sizeof(chestplate_stats));
-    if(!cpy->equipment->c_s) {
-        free(cpy->equipment->h_s); free(cpy->equipment); free(cpy->moves);
-        free(cpy->stats); free(cpy); 
-        return NULL;
-    }
-    *(cpy->equipment->c_s) = *(aux->equipment->c_s);
-
-    cpy->equipment->a_s = (armlet_stats*) malloc(sizeof(armlet_stats));
-    if(!cpy->equipment->a_s) {
-        free(cpy->equipment->c_s); free(cpy->equipment->h_s); free(cpy->equipment);
-        free(cpy->moves); free(cpy->stats); free(cpy); 
-        return NULL;
-    }
-    *(cpy->equipment->a_s) = *(aux->equipment->a_s);
-
-    cpy->equipment->b_s = (boots_stats*) malloc(sizeof(boots_stats));
-    if(!cpy->equipment->b_s) {
-        free(cpy->equipment->a_s); free(cpy->equipment->c_s); free(cpy->equipment->h_s); free(cpy->equipment);
-        free(cpy->moves); free(cpy->stats); free(cpy); 
-        return NULL;
-    }
-    *(cpy->equipment->b_s) = *(aux->equipment->b_s);
-
-    cpy->equipment->w_s = (weapon_stats*) malloc(sizeof(weapon_stats));
-    if(!cpy->equipment->w_s) {
-        free(cpy->equipment->b_s); free(cpy->equipment->a_s); free(cpy->equipment->c_s); free(cpy->equipment->h_s);
-        free(cpy->equipment); free(cpy->moves); free(cpy->stats); free(cpy); 
-        return NULL;
-    }
-    *(cpy->equipment->w_s) = *(aux->equipment->w_s);
 
     mysql_stmt_free_result(stmt);
     mysql_stmt_close(stmt);
 
-    return cpy;
+    return aux;
 }
 
 int ins_user_db(MYSQL* conn, char username[30], char pass[30]) {
@@ -493,11 +370,11 @@ long ins_weapon_db(MYSQL* conn, weapon_stats* w) {
 long ins_equipment_db(MYSQL* conn, equipment* e) {
     if(!e) return 0;
 
-    int helmet_id = ins_helmet_db(conn, e->h_s);
-    int chestplate_id = ins_chestplate_db(conn, e->c_s);
-    int armlet_id = ins_armlet_db(conn, e->a_s);
-    int boots_id = ins_boots_db(conn, e->b_s);
-    int weapon_id = ins_weapon_db(conn, e->w_s);
+    int helmet_id = ins_helmet_db(conn, &e->h_s);
+    int chestplate_id = ins_chestplate_db(conn, &e->c_s);
+    int armlet_id = ins_armlet_db(conn, &e->a_s);
+    int boots_id = ins_boots_db(conn, &e->b_s);
+    int weapon_id = ins_weapon_db(conn, &e->w_s);
     if(!helmet_id || !chestplate_id || !armlet_id || !boots_id || !weapon_id) return 0;
 
     MYSQL_STMT* stmt = mysql_stmt_init(conn);
@@ -619,9 +496,9 @@ long ins_adv_db(MYSQL* conn, adv* adventurer) {
     
     mysql_autocommit(conn, 0);
 
-    int id_equipment = ins_equipment_db(conn, adventurer->equipment);
-    int id_stats = ins_stats_db(conn, adventurer->stats);
-    int id_moves = ins_moves_db(conn, adventurer->moves);
+    int id_equipment = ins_equipment_db(conn, &adventurer->equipment);
+    int id_stats = ins_stats_db(conn, &adventurer->stats);
+    int id_moves = ins_moves_db(conn, &adventurer->moves);
     if(!id_stats || !id_equipment || !id_moves) {
         mysql_rollback(conn);   
         return 0;
@@ -862,7 +739,7 @@ int upd_weapon_db(MYSQL* conn, weapon_stats* w) {
 }
 
 int upd_equipment_db(MYSQL* conn, equipment* e) {
-    if(!e || !e->a_s || !e->b_s || !e->c_s || !e->h_s || !e->w_s) return 0;
+    if(!e || !(&e->a_s) || !(&e->b_s) || !(&e->c_s) || !(&e->h_s) || !(&e->w_s)) return 0;
     
     mysql_autocommit(conn, 0);
     
@@ -875,15 +752,15 @@ int upd_equipment_db(MYSQL* conn, equipment* e) {
     MYSQL_BIND bind[6];
     memset(bind, 0, sizeof(bind));
     bind[0].buffer_type = MYSQL_TYPE_LONG;
-    bind[0].buffer = &e->h_s->h_id;
+    bind[0].buffer = &e->h_s.h_id;
     bind[1].buffer_type = MYSQL_TYPE_LONG;
-    bind[1].buffer = &e->c_s->c_id;
+    bind[1].buffer = &e->c_s.c_id;
     bind[2].buffer_type = MYSQL_TYPE_LONG;
-    bind[2].buffer = &e->a_s->a_id;
+    bind[2].buffer = &e->a_s.a_id;
     bind[3].buffer_type = MYSQL_TYPE_LONG;
-    bind[3].buffer = &e->b_s->b_id;
+    bind[3].buffer = &e->b_s.b_id;
     bind[4].buffer_type = MYSQL_TYPE_LONG;
-    bind[4].buffer = &e->w_s->w_id;
+    bind[4].buffer = &e->w_s.w_id;
     bind[5].buffer_type = MYSQL_TYPE_LONG;
     bind[5].buffer = &e->e_id;
     if(mysql_stmt_bind_param(stmt, bind)){
@@ -991,7 +868,7 @@ int upd_stats_db(MYSQL* conn, stats* s) {
 }
 
 int upd_adv_db(MYSQL* conn, adv* adventurer) {
-    if(!adventurer || !adventurer->equipment || !adventurer->moves || !adventurer->stats) return 0;
+    if(!adventurer || !(&adventurer->equipment) || !(&adventurer->moves) || !(&adventurer->stats)) return 0;
 
     mysql_autocommit(conn, 0);
     
@@ -1004,11 +881,11 @@ int upd_adv_db(MYSQL* conn, adv* adventurer) {
     MYSQL_BIND bind[4];
     memset(bind, 0, sizeof(bind)); 
     bind[0].buffer_type = MYSQL_TYPE_LONG;
-    bind[0].buffer = &adventurer->stats->s_id;
+    bind[0].buffer = &adventurer->stats.s_id;
     bind[1].buffer_type = MYSQL_TYPE_LONG;
-    bind[1].buffer = &adventurer->moves->m_id;
+    bind[1].buffer = &adventurer->moves.m_id;
     bind[2].buffer_type = MYSQL_TYPE_LONG;
-    bind[2].buffer = &adventurer->equipment->e_id;
+    bind[2].buffer = &adventurer->equipment.e_id;
     bind[3].buffer_type = MYSQL_TYPE_LONG;
     bind[3].buffer = &adventurer->adv_id;
     if(mysql_stmt_bind_param(stmt, bind)){
@@ -1028,7 +905,7 @@ int upd_adv_db(MYSQL* conn, adv* adventurer) {
 }
 
 int upd_user_db(MYSQL* conn, user_info* u) {
-    if(!u || !u->adventurer) return 0;
+    if(!u || !(&u->adventurer)) return 0;
 
     mysql_autocommit(conn, 0);
     
@@ -1041,13 +918,13 @@ int upd_user_db(MYSQL* conn, user_info* u) {
     MYSQL_BIND bind[4];
     memset(bind, 0, sizeof(bind)); 
     bind[0].buffer_type = MYSQL_TYPE_STRING;
-    bind[0].buffer = u->user_name;
-    bind[0].buffer_length = strlen(u->user_name);
+    bind[0].buffer = u->username;
+    bind[0].buffer_length = strlen(u->username);
     bind[1].buffer_type = MYSQL_TYPE_STRING;
     bind[1].buffer = u->pass;
     bind[1].buffer_length = strlen(u->pass);
     bind[2].buffer_type = MYSQL_TYPE_LONG;
-    bind[2].buffer = &u->adventurer->adv_id;
+    bind[2].buffer = &u->adventurer.adv_id;
     bind[3].buffer_type = MYSQL_TYPE_LONG;
     bind[3].buffer = &u->id;
     if(mysql_stmt_bind_param(stmt, bind)){

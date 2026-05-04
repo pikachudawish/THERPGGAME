@@ -186,7 +186,7 @@ int server_loop() {
             } else {
                 package* pkg = (package*)malloc(sizeof(package));
                 if(!pkg) {
-                    fprintf(stderr, "[ERROR] Failed Memory Allocation (pkg)\n");
+                    fprintf(stderr, "[ERROR] Failed Memory Allocation (pkg server_loop)\n");
                     free_server(clinfo, NULL, pollsize);
                     return 0;
                 }

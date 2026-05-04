@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <pthread.h>
 #include <poll.h>
@@ -24,7 +25,9 @@ int pkg_vrf_ui(int fd, package* pkg) {
         return 0;
     }
 
-    *ui->user_name = *pkg->data.ui->user_name;
+    strcpy(ui->username, pkg->data.ui.username);
+    strcpy(ui->pass, pkg->data.ui.pass);
+    
     new_task->data = ui;
     new_task->next = NULL;
 
@@ -40,8 +43,6 @@ int pkg_vrf_ui(int fd, package* pkg) {
 
     pthread_cond_signal(&db_cond);
     pthread_mutex_unlock(&db_mutex);
-
-    free(ui);
 
     return 1;
 }
@@ -63,7 +64,8 @@ int pkg_get_adv(int fd, package* pkg) {
         return 0;
     }
 
-    *ui->user_name = *pkg->data.ui->user_name;
+    strcpy(ui->username, pkg->data.ui.username);
+
     new_task->data = ui;
     new_task->next = NULL;
 
@@ -79,8 +81,6 @@ int pkg_get_adv(int fd, package* pkg) {
 
     pthread_cond_signal(&db_cond);
     pthread_mutex_unlock(&db_mutex);
-
-    free(ui);
 
     return 1;
 }
@@ -103,9 +103,10 @@ int pkg_ins_ui(int fd, package* pkg) {
     }
 
 
-    *ui = *pkg->data.ui;
-    *ui->user_name = *pkg->data.ui->user_name;
-    *ui->pass = *pkg->data.ui->pass;
+    *ui = pkg->data.ui;
+    strcpy(ui->username, pkg->data.ui.username);
+    strcpy(ui->pass, pkg->data.ui.pass);
+    
     new_task->data = ui;
     new_task->next = NULL;
 
@@ -121,8 +122,6 @@ int pkg_ins_ui(int fd, package* pkg) {
 
     pthread_cond_signal(&db_cond);
     pthread_mutex_unlock(&db_mutex);
-
-    free(ui);
 
     return 1;
 }
@@ -161,8 +160,6 @@ int pkg_add_adv_to_user(int fd, package* pkg) {
     pthread_cond_signal(&db_cond);
     pthread_mutex_unlock(&db_mutex);
 
-    free(ids);
-
     return 1;
 }
 
@@ -182,7 +179,7 @@ int pkg_ins(int fd, package* pkg) {
         free(new_task);
         return 0;
     }
-    *aux = *pkg->data.adventurer;
+    *aux = pkg->data.adventurer;
     new_task->data = aux;
     new_task->next = NULL;
 
@@ -198,8 +195,6 @@ int pkg_ins(int fd, package* pkg) {
 
     pthread_cond_signal(&db_cond);
     pthread_mutex_unlock(&db_mutex);
-
-    free(aux);
 
     return 1;
 }
@@ -220,7 +215,7 @@ int pkg_upd_adv(int fd, package* pkg) {
         free(new_task);
         return 0;
     }
-    *aux = *pkg->data.adventurer;
+    *aux = pkg->data.adventurer;
     new_task->data = aux;
     new_task->next = NULL;
 
@@ -236,8 +231,6 @@ int pkg_upd_adv(int fd, package* pkg) {
 
     pthread_cond_signal(&db_cond);
     pthread_mutex_unlock(&db_mutex);
-
-    free(aux);
 
     return 1;
 }
@@ -258,7 +251,7 @@ int pkg_upd_s(int fd, package* pkg) {
         free(new_task);
         return 0;
     }
-    *aux = *pkg->data.s;
+    *aux = pkg->data.s;
     new_task->data = aux;
     new_task->next = NULL;
 
@@ -274,8 +267,6 @@ int pkg_upd_s(int fd, package* pkg) {
 
     pthread_cond_signal(&db_cond);
     pthread_mutex_unlock(&db_mutex);
-
-    free(aux);
 
     return 1;
 }
@@ -296,7 +287,7 @@ int pkg_upd_m(int fd, package* pkg) {
         free(new_task);
         return 0;
     }
-    *aux = *pkg->data.m;
+    *aux = pkg->data.m;
     new_task->data = aux;
     new_task->next = NULL;
 
@@ -312,8 +303,6 @@ int pkg_upd_m(int fd, package* pkg) {
 
     pthread_cond_signal(&db_cond);
     pthread_mutex_unlock(&db_mutex);
-
-    free(aux);
 
     return 1;
 }
@@ -334,7 +323,7 @@ int pkg_upd_e(int fd, package* pkg) {
         free(new_task);
         return 0;
     }
-    *aux = *pkg->data.e;
+    *aux = pkg->data.e;
     new_task->data = aux;
     new_task->next = NULL;
 
@@ -350,8 +339,6 @@ int pkg_upd_e(int fd, package* pkg) {
 
     pthread_cond_signal(&db_cond);
     pthread_mutex_unlock(&db_mutex);
-
-    free(aux);
 
     return 1;
 }
@@ -372,7 +359,7 @@ int pkg_upd_h(int fd, package* pkg) {
         free(new_task);
         return 0;
     }
-    *aux = *pkg->data.h;
+    *aux = pkg->data.h;
     new_task->data = aux;
     new_task->next = NULL;
 
@@ -388,8 +375,6 @@ int pkg_upd_h(int fd, package* pkg) {
 
     pthread_cond_signal(&db_cond);
     pthread_mutex_unlock(&db_mutex);
-
-    free(aux);
 
     return 1;
 }
@@ -410,7 +395,7 @@ int pkg_upd_c(int fd, package* pkg) {
         free(new_task);
         return 0;
     }
-    *aux = *pkg->data.c;
+    *aux = pkg->data.c;
     new_task->data = aux;
     new_task->next = NULL;
 
@@ -426,8 +411,6 @@ int pkg_upd_c(int fd, package* pkg) {
 
     pthread_cond_signal(&db_cond);
     pthread_mutex_unlock(&db_mutex);
-
-    free(aux);
 
     return 1;
 }
@@ -448,7 +431,7 @@ int pkg_upd_a(int fd, package* pkg) {
         free(new_task);
         return 0;
     }
-    *aux = *pkg->data.a;
+    *aux = pkg->data.a;
     new_task->data = aux;
     new_task->next = NULL;
 
@@ -464,8 +447,6 @@ int pkg_upd_a(int fd, package* pkg) {
 
     pthread_cond_signal(&db_cond);
     pthread_mutex_unlock(&db_mutex);
-
-    free(aux);
 
     return 1;
 }
@@ -486,7 +467,7 @@ int pkg_upd_b(int fd, package* pkg) {
         free(new_task);
         return 0;
     }
-    *aux = *pkg->data.b;
+    *aux = pkg->data.b;
     new_task->data = aux;
     new_task->next = NULL;
 
@@ -502,8 +483,6 @@ int pkg_upd_b(int fd, package* pkg) {
 
     pthread_cond_signal(&db_cond);
     pthread_mutex_unlock(&db_mutex);
-
-    free(aux);
 
     return 1;
 }
@@ -524,7 +503,7 @@ int pkg_upd_w(int fd, package* pkg) {
         free(new_task);
         return 0;
     }
-    *aux = *pkg->data.w;
+    *aux = pkg->data.w;
     new_task->data = aux;
     new_task->next = NULL;
 
@@ -540,8 +519,6 @@ int pkg_upd_w(int fd, package* pkg) {
 
     pthread_cond_signal(&db_cond);
     pthread_mutex_unlock(&db_mutex);
-
-    free(aux);
 
     return 1;
 }
@@ -562,7 +539,7 @@ int pkg_rmv(int fd, package* pkg) {
         free(new_task);
         return 0;
     }
-    *aux = *pkg->data.adventurer;
+    *aux = pkg->data.adventurer;
     new_task->data = aux;
     new_task->next = NULL;
 
@@ -578,8 +555,6 @@ int pkg_rmv(int fd, package* pkg) {
 
     pthread_cond_signal(&db_cond);
     pthread_mutex_unlock(&db_mutex);
-
-    free(aux);
 
     return 1;
 }

@@ -80,7 +80,7 @@ typedef struct _adv {
 
 typedef struct _user_info {
     int id;
-    char user_name[30];
+    char username[30];
     char pass[30];
     adv adventurer;
 } user_info;

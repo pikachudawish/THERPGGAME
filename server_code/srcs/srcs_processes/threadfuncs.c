@@ -122,8 +122,8 @@ void* db_backup(void* arg) {
         MYSQL_BIND bind[44];
         memset(bind, 0, sizeof(bind));
         bind[0].buffer_type = MYSQL_TYPE_STRING;
-        bind[0].buffer = aux->user_name;
-        bind[0].buffer_length = sizeof(aux->user_name);
+        bind[0].buffer = aux->username;
+        bind[0].buffer_length = sizeof(aux->username);
         bind[1].buffer_type = MYSQL_TYPE_STRING;
         bind[1].buffer = aux->pass;
         bind[1].buffer_length = sizeof(aux->pass);
@@ -246,7 +246,7 @@ void* db_backup(void* arg) {
         fprintf(weapon_csv, "weapon_id;weapon_name;weapon_lvl;weapon_exp;weapon_physical_dmg;weapon_magical_dmg\n");
         while(mysql_stmt_fetch(stmt_adv) == 0) {
             fprintf(userinfo_csv, "%s;%s;%d\n", 
-                aux->user_name, aux->pass, aux->adventurer->adv_id);
+                aux->username, aux->pass, aux->adventurer->adv_id);
             fprintf(adventurer_csv, "%d;%d;%d;%d\n", 
                 aux->adventurer->adv_id, aux->adventurer->stats->s_id, aux->adventurer->moves->m_id, aux->adventurer->equipment->e_id);
             fprintf(stats_csv, "%d;%s;%s;%d;%lf;%d;%d;%d;%d\n",
@@ -391,10 +391,10 @@ void* db_worker(void* arg) {
             case DBTASK_UPD_UI:
                 user_info* u = (user_info*)task->data;
                 if(!upd_user_db(conn, u)) {
-                    fprintf(logdb_file, "[ERROR] Aborted Update of the user nº%d\n", u->id);
-                    fprintf(stderr, "[ERROR] Aborted Update of the user nº%d\n", u->id); break;
+                    //fprintf(logdb_file, "[ERROR] Aborted Update of the user nº%d\n", u->id);
+                    //fprintf(stderr, "[ERROR] Aborted Update of the user nº%d\n", u->id); break;
                 } 
-                fprintf(logdb_file, "[DB] Successfully Updated the user nº%d\n", u->id);
+                //fprintf(logdb_file, "[DB] Successfully Updated the user nº%d\n", u->id);
                 break;
             case DBTASK_UPD_ADV:
                 adv* adventurer_upd = (adv*)task->data;
