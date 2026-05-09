@@ -14,6 +14,7 @@
 #include "../../hdrs/hdrs_structs/structs_server.h"
 #include "../../hdrs/hdrs_structs/structs_hash.h"
 #include "../../hdrs/hdrs_aux/globalvariable.h"
+#include "../../enums.h"
 
 #include "../../hdrs/hdrs_server/serverfuncs.h"
 #include "../../hdrs/hdrs_server/serverauxfuncs.h"

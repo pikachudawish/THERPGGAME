@@ -7,6 +7,7 @@
 
 #include "../../hdrs/hdrs_structs/structs_server.h"
 #include "../../hdrs/hdrs_aux/globalvariable.h"
+#include "../../enums.h"
 
 int pkg_vrf_ui(int fd, package* pkg) {
     dbtask* new_task = (dbtask*)malloc(sizeof(dbtask));

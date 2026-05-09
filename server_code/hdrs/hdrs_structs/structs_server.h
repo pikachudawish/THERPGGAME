@@ -3,37 +3,14 @@
 
 #include <time.h>
 
-#include "../../hdrs/hdrs_structs/structs_hash.h"
 #include "../../hdrs/hdrs_structs/structs_adv.h"
-
 
 typedef struct {
     struct pollfd* poll;
     time_t* last_seen;
 } _cliinfo;
 
-enum pkgtype {
-    PKG_HB,
-    PKG_LOGIN_USERINFO,
-    PKG_CREATE_USERINFO,
-    PKG_GET_ADV,
-    PKG_INS_UI,
-    PKG_ADD_ADV_TO_USER,
-    PKG_INS,
-    PKG_UPD_UI,
-    PKG_UPD_ADV,
-    PKG_UPD_S,
-    PKG_UPD_M,
-    PKG_UPD_E,
-    PKG_UPD_H,
-    PKG_UPD_C,
-    PKG_UPD_A,
-    PKG_UPD_B,
-    PKG_UPD_W,
-    PKG_RMV,
-    PKG_PING_SUCESS,
-    PKG_PING_FAILURE,
-};
+
 
 typedef struct _package {
     int type;
@@ -56,27 +33,8 @@ typedef struct _package {
 
 typedef struct _packagelist {
     package pkg;
-    struct _packagelist* next
+    struct _packagelist* next;
 } packagelist;
-
-enum dbtasktype {
-    DBTASK_GET_ADV,
-    DBTASK_INS_UI,
-    DBTASK_ADD_ADV_TO_USER,
-    DBTASK_INS,
-    DBTASK_UPD_UI,
-    DBTASK_UPD_ADV,
-    DBTASK_UPD_S,
-    DBTASK_UPD_M,
-    DBTASK_UPD_E,
-    DBTASK_UPD_H,
-    DBTASK_UPD_C,
-    DBTASK_UPD_A,
-    DBTASK_UPD_B,
-    DBTASK_UPD_W,
-    DBTASK_RMV,
-    DBTASK_VRF_UI
-};
 
 typedef struct _dbtask {
     int type;

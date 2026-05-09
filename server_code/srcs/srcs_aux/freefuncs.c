@@ -4,8 +4,6 @@
 #include "../../hdrs/hdrs_structs/structs_hash.h"
 #include "../../hdrs/hdrs_structs/structs_server.h"
 
-#define TABLE_SIZE 167
-
 void free_adv(adv* a) {
     free(a->equipment->h_s);
     free(a->equipment->c_s);

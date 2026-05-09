@@ -3,10 +3,10 @@ GAME = game_code/game
 
 # <--- DIRECTORIES ---> #
 SRV_SRC_DIRS = server_code/srcs/srcs_processes server_code/srcs/srcs_db server_code/srcs/srcs_server server_code/srcs/srcs_aux
-SRV_HDR_DIRS = server_code/hdrs/hdrs_aux server_code/hdrs/hdrs_db server_code/hdrs/hdrs_server server_code/hdrs/hdrs_thread
+SRV_HDR_DIRS = server_code/hdrs/hdrs_aux server_code/hdrs/hdrs_db server_code/hdrs/hdrs_server server_code/hdrs/hdrs_thread enums.h
 
 GAME_SRC_DIRS = game_code/srcs/srcs_aux game_code/srcs/srcs_game game_code/srcs/srcs_server game_code/srcs/srcs_processes
-GAME_HDR_DIRS = game_code/hdrs/hdrs_aux game_code/hdrs/hdrs_server game_code/hdrs/hdrs_structs game_code/hdrs/hdrs_processes
+GAME_HDR_DIRS = game_code/hdrs/hdrs_aux game_code/hdrs/hdrs_server game_code/hdrs/hdrs_structs game_code/hdrs/hdrs_processes enums.h
 
 SRV_INCLUDE_HDRS = $(addprefix -I, $(SRV_HDR_DIRS)) -Ihdrs
 SRV_OBJ_DIR = server_code/obj

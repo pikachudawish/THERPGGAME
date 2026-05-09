@@ -12,6 +12,7 @@
 #include "../../hdrs/hdrs_structs/structs_server.h"
 #include "../../hdrs/hdrs_structs/structs_adv.h"
 #include "../../hdrs/hdrs_aux/globalvariable.h"
+#include "../../enums.h"
 
 #include "../../hdrs/hdrs_aux/freefuncs.h"
 #include "../../hdrs/hdrs_db/dbfuncs.h"
@@ -53,68 +54,11 @@ void* commandline(void* arg) {
 void* db_backup(void* arg) {
     MYSQL* conn = (MYSQL*)arg;
 
-    user_info* aux = (user_info*)malloc(sizeof(user_info));
-    if(!aux) return 0;
-
-    aux->adventurer = (adv*)malloc(sizeof(adv));
-    if(!aux->adventurer) {
-        free(aux);
-        return 0;
-    }
-    aux->adventurer->stats = (stats*)malloc(sizeof(stats));
-    if(!aux->adventurer->stats) {
-        free(aux->adventurer); free(aux);
-        return 0;
-    }
-    aux->adventurer->moves = (moves*)malloc(sizeof(moves));
-    if(!aux->adventurer->moves) {
-        free(aux->adventurer->stats); free(aux->adventurer); free(aux);
-        return 0;
-    }
-    aux->adventurer->equipment = (equipment*)malloc(sizeof(equipment));
-    if(!aux->adventurer->equipment) {
-        free(aux->adventurer->moves); free(aux->adventurer->stats); free(aux->adventurer); free(aux);
-        return 0;
-    }
-    aux->adventurer->equipment->h_s = (helmet_stats*)malloc(sizeof(helmet_stats));
-    if(!aux->adventurer->equipment->h_s) {
-        free(aux->adventurer->equipment); free(aux->adventurer->moves); free(aux->adventurer->stats); 
-        free(aux->adventurer); free(aux);
-        return 0;
-    }
-    aux->adventurer->equipment->c_s = (chestplate_stats*)malloc(sizeof(chestplate_stats));
-    if(!aux->adventurer->equipment->c_s) {
-        free(aux->adventurer->equipment->h_s); free(aux->adventurer->equipment); free(aux->adventurer->moves); 
-        free(aux->adventurer->stats); free(aux->adventurer); free(aux);
-        return 0;
-    }
-    aux->adventurer->equipment->a_s = (armlet_stats*)malloc(sizeof(armlet_stats));
-    if(!aux->adventurer->equipment->a_s) {
-        free(aux->adventurer->equipment->c_s); free(aux->adventurer->equipment->h_s); free(aux->adventurer->equipment); 
-        free(aux->adventurer->moves); free(aux->adventurer->stats); free(aux->adventurer); free(aux);
-        return 0;
-    }
-    aux->adventurer->equipment->b_s = (boots_stats*)malloc(sizeof(boots_stats));
-    if(!aux->adventurer->equipment->b_s) {
-        free(aux->adventurer->equipment->a_s); free(aux->adventurer->equipment->c_s); 
-        free(aux->adventurer->equipment->h_s); free(aux->adventurer->equipment); free(aux->adventurer->moves); 
-        free(aux->adventurer->stats); free(aux->adventurer); free(aux);
-        return 0;
-    }
-    aux->adventurer->equipment->w_s = (weapon_stats*)malloc(sizeof(weapon_stats));
-    if(!aux->adventurer->equipment->w_s) {
-        free(aux->adventurer->equipment->b_s); free(aux->adventurer->equipment->a_s); free(aux->adventurer->equipment->c_s); 
-        free(aux->adventurer->equipment->h_s); free(aux->adventurer->equipment); free(aux->adventurer->moves); 
-        free(aux->adventurer->stats); free(aux->adventurer); free(aux);
-        return 0;
-    }
+    user_info aux;
 
     while(*server) {
         MYSQL_STMT* stmt_adv = mysql_stmt_init(conn);
         if(mysql_stmt_prepare(stmt_adv, SELECT_BACKUP, strlen(SELECT_BACKUP)) != 0) {
-            free(aux->adventurer->equipment->b_s); free(aux->adventurer->equipment->a_s); free(aux->adventurer->equipment->c_s); 
-            free(aux->adventurer->equipment->h_s); free(aux->adventurer->equipment); free(aux->adventurer->moves); 
-            free(aux->adventurer->stats); free(aux->adventurer); free(aux);
             mysql_stmt_close(stmt_adv);
             return 0;
         }
@@ -122,102 +66,102 @@ void* db_backup(void* arg) {
         MYSQL_BIND bind[44];
         memset(bind, 0, sizeof(bind));
         bind[0].buffer_type = MYSQL_TYPE_STRING;
-        bind[0].buffer = aux->username;
-        bind[0].buffer_length = sizeof(aux->username);
+        bind[0].buffer = aux.username;
+        bind[0].buffer_length = sizeof(aux.username);
         bind[1].buffer_type = MYSQL_TYPE_STRING;
-        bind[1].buffer = aux->pass;
-        bind[1].buffer_length = sizeof(aux->pass);
+        bind[1].buffer = aux.pass;
+        bind[1].buffer_length = sizeof(aux.pass);
         bind[2].buffer_type = MYSQL_TYPE_LONG;
-        bind[2].buffer = &aux->adventurer->adv_id;
+        bind[2].buffer = &aux.adventurer.adv_id;
         bind[3].buffer_type = MYSQL_TYPE_LONG;
-        bind[3].buffer = &aux->adventurer->stats->s_id;
+        bind[3].buffer = &aux.adventurer.stats.s_id;
         bind[4].buffer_type = MYSQL_TYPE_STRING;
-        bind[4].buffer = aux->adventurer->stats->name;
-        bind[4].buffer_length = sizeof(aux->adventurer->stats->name);
+        bind[4].buffer = aux.adventurer.stats.name;
+        bind[4].buffer_length = sizeof(aux.adventurer.stats.name);
         bind[5].buffer_type = MYSQL_TYPE_STRING;
-        bind[5].buffer = aux->adventurer->stats->class;
-        bind[5].buffer_length = sizeof(aux->adventurer->stats->class);
+        bind[5].buffer = aux.adventurer.stats.class;
+        bind[5].buffer_length = sizeof(aux.adventurer.stats.class);
         bind[6].buffer_type = MYSQL_TYPE_LONG;
-        bind[6].buffer = &aux->adventurer->stats->lvl;
+        bind[6].buffer = &aux.adventurer.stats.lvl;
         bind[7].buffer_type = MYSQL_TYPE_DOUBLE;
-        bind[7].buffer = &aux->adventurer->stats->exp;
+        bind[7].buffer = &aux.adventurer.stats.exp;
         bind[8].buffer_type = MYSQL_TYPE_LONG;
-        bind[8].buffer = &aux->adventurer->stats->max_hp;
+        bind[8].buffer = &aux.adventurer.stats.max_hp;
         bind[9].buffer_type = MYSQL_TYPE_LONG;
-        bind[9].buffer = &aux->adventurer->stats->max_mana;
+        bind[9].buffer = &aux.adventurer.stats.max_mana;
         bind[10].buffer_type = MYSQL_TYPE_LONG;
-        bind[10].buffer = &aux->adventurer->stats->physical_dmg;
+        bind[10].buffer = &aux.adventurer.stats.physical_dmg;
         bind[11].buffer_type = MYSQL_TYPE_LONG;
-        bind[11].buffer = &aux->adventurer->stats->magic_dmg;
+        bind[11].buffer = &aux.adventurer.stats.magic_dmg;
         bind[12].buffer_type = MYSQL_TYPE_LONG;
-        bind[12].buffer = &aux->adventurer->moves->m_id;
+        bind[12].buffer = &aux.adventurer.moves.m_id;
         bind[13].buffer_type = MYSQL_TYPE_LONG;
-        bind[13].buffer = &aux->adventurer->moves->move1_id;
+        bind[13].buffer = &aux.adventurer.moves.move1_id;
         bind[14].buffer_type = MYSQL_TYPE_LONG;
-        bind[14].buffer = &aux->adventurer->moves->move2_id;
+        bind[14].buffer = &aux.adventurer.moves.move2_id;
         bind[15].buffer_type = MYSQL_TYPE_LONG;
-        bind[15].buffer = &aux->adventurer->moves->move3_id;
+        bind[15].buffer = &aux.adventurer.moves.move3_id;
         bind[16].buffer_type = MYSQL_TYPE_LONG;
-        bind[16].buffer = &aux->adventurer->moves->move4_id;
+        bind[16].buffer = &aux.adventurer.moves.move4_id;
         bind[17].buffer_type = MYSQL_TYPE_LONG;
-        bind[17].buffer = &aux->adventurer->equipment->e_id;
+        bind[17].buffer = &aux.adventurer.equipment.e_id;
         bind[18].buffer_type = MYSQL_TYPE_LONG;
-        bind[18].buffer = &aux->adventurer->equipment->h_s->h_id;
+        bind[18].buffer = &aux.adventurer.equipment.h_s.h_id;
         bind[19].buffer_type = MYSQL_TYPE_STRING;
-        bind[19].buffer = aux->adventurer->equipment->h_s->name;
-        bind[19].buffer_length = sizeof(aux->adventurer->equipment->h_s->name);
+        bind[19].buffer = aux.adventurer.equipment.h_s.name;
+        bind[19].buffer_length = sizeof(aux.adventurer.equipment.h_s.name);
         bind[20].buffer_type = MYSQL_TYPE_LONG;
-        bind[20].buffer = &aux->adventurer->equipment->h_s->lvl;
+        bind[20].buffer = &aux.adventurer.equipment.h_s.lvl;
         bind[21].buffer_type = MYSQL_TYPE_DOUBLE;
-        bind[21].buffer = &aux->adventurer->equipment->h_s->exp;
+        bind[21].buffer = &aux.adventurer.equipment.h_s.exp;
         bind[22].buffer_type = MYSQL_TYPE_LONG;
-        bind[22].buffer = &aux->adventurer->equipment->h_s->defense;
+        bind[22].buffer = &aux.adventurer.equipment.h_s.defense;
         bind[23].buffer_type = MYSQL_TYPE_LONG;
-        bind[23].buffer = &aux->adventurer->equipment->c_s->c_id;
+        bind[23].buffer = &aux.adventurer.equipment.c_s.c_id;
         bind[24].buffer_type = MYSQL_TYPE_STRING;
-        bind[24].buffer = aux->adventurer->equipment->c_s->name;
-        bind[24].buffer_length = sizeof(aux->adventurer->equipment->c_s->name);
+        bind[24].buffer = aux.adventurer.equipment.c_s.name;
+        bind[24].buffer_length = sizeof(aux.adventurer.equipment.c_s.name);
         bind[25].buffer_type = MYSQL_TYPE_LONG;
-        bind[25].buffer = &aux->adventurer->equipment->c_s->lvl;
+        bind[25].buffer = &aux.adventurer.equipment.c_s.lvl;
         bind[26].buffer_type = MYSQL_TYPE_DOUBLE;
-        bind[26].buffer = &aux->adventurer->equipment->c_s->exp;
+        bind[26].buffer = &aux.adventurer.equipment.c_s.exp;
         bind[27].buffer_type = MYSQL_TYPE_LONG;
-        bind[27].buffer = &aux->adventurer->equipment->c_s->defense;
+        bind[27].buffer = &aux.adventurer.equipment.c_s.defense;
         bind[28].buffer_type = MYSQL_TYPE_LONG;
-        bind[28].buffer = &aux->adventurer->equipment->a_s->a_id;
+        bind[28].buffer = &aux.adventurer.equipment.a_s.a_id;
         bind[29].buffer_type = MYSQL_TYPE_STRING;
-        bind[29].buffer = aux->adventurer->equipment->a_s->name;
-        bind[29].buffer_length = sizeof(aux->adventurer->equipment->a_s->name);
+        bind[29].buffer = aux.adventurer.equipment.a_s.name;
+        bind[29].buffer_length = sizeof(aux.adventurer.equipment.a_s.name);
         bind[30].buffer_type = MYSQL_TYPE_LONG;
-        bind[30].buffer = &aux->adventurer->equipment->a_s->lvl;
+        bind[30].buffer = &aux.adventurer.equipment.a_s.lvl;
         bind[31].buffer_type = MYSQL_TYPE_DOUBLE;
-        bind[31].buffer = &aux->adventurer->equipment->a_s->exp;
+        bind[31].buffer = &aux.adventurer.equipment.a_s.exp;
         bind[32].buffer_type = MYSQL_TYPE_LONG;
-        bind[32].buffer = &aux->adventurer->equipment->a_s->defense;
+        bind[32].buffer = &aux.adventurer.equipment.a_s.defense;
         bind[33].buffer_type = MYSQL_TYPE_LONG;
-        bind[33].buffer = &aux->adventurer->equipment->b_s->b_id;
+        bind[33].buffer = &aux.adventurer.equipment.b_s.b_id;
         bind[34].buffer_type = MYSQL_TYPE_STRING;
-        bind[34].buffer = aux->adventurer->equipment->b_s->name;
-        bind[34].buffer_length = sizeof(aux->adventurer->equipment->b_s->name);
+        bind[34].buffer = aux.adventurer.equipment.b_s.name;
+        bind[34].buffer_length = sizeof(aux.adventurer.equipment.b_s.name);
         bind[35].buffer_type = MYSQL_TYPE_LONG;
-        bind[35].buffer = &aux->adventurer->equipment->b_s->lvl;
+        bind[35].buffer = &aux.adventurer.equipment.b_s.lvl;
         bind[36].buffer_type = MYSQL_TYPE_DOUBLE;
-        bind[36].buffer = &aux->adventurer->equipment->b_s->exp;
+        bind[36].buffer = &aux.adventurer.equipment.b_s.exp;
         bind[37].buffer_type = MYSQL_TYPE_LONG;
-        bind[37].buffer = &aux->adventurer->equipment->b_s->defense;
+        bind[37].buffer = &aux.adventurer.equipment.b_s.defense;
         bind[38].buffer_type = MYSQL_TYPE_LONG;
-        bind[38].buffer = &aux->adventurer->equipment->w_s->w_id;
+        bind[38].buffer = &aux.adventurer.equipment.w_s.w_id;
         bind[39].buffer_type = MYSQL_TYPE_STRING;
-        bind[39].buffer = aux->adventurer->equipment->w_s->name;
-        bind[39].buffer_length = sizeof(aux->adventurer->equipment->w_s->name);
+        bind[39].buffer = aux.adventurer.equipment.w_s.name;
+        bind[39].buffer_length = sizeof(aux.adventurer.equipment.w_s.name);
         bind[40].buffer_type = MYSQL_TYPE_LONG;
-        bind[40].buffer = &aux->adventurer->equipment->w_s->lvl;
+        bind[40].buffer = &aux.adventurer.equipment.w_s.lvl;
         bind[41].buffer_type = MYSQL_TYPE_DOUBLE;
-        bind[41].buffer = &aux->adventurer->equipment->w_s->exp;
+        bind[41].buffer = &aux.adventurer.equipment.w_s.exp;
         bind[42].buffer_type = MYSQL_TYPE_LONG;
-        bind[42].buffer = &aux->adventurer->equipment->w_s->physical_dmg;
+        bind[42].buffer = &aux.adventurer.equipment.w_s.physical_dmg;
         bind[43].buffer_type = MYSQL_TYPE_LONG;
-        bind[43].buffer = &aux->adventurer->equipment->w_s->magic_dmg;
+        bind[43].buffer = &aux.adventurer.equipment.w_s.magic_dmg;
         
         mysql_stmt_bind_result(stmt_adv, bind);
         mysql_stmt_execute(stmt_adv); 
@@ -246,34 +190,34 @@ void* db_backup(void* arg) {
         fprintf(weapon_csv, "weapon_id;weapon_name;weapon_lvl;weapon_exp;weapon_physical_dmg;weapon_magical_dmg\n");
         while(mysql_stmt_fetch(stmt_adv) == 0) {
             fprintf(userinfo_csv, "%s;%s;%d\n", 
-                aux->username, aux->pass, aux->adventurer->adv_id);
+                aux.username, aux.pass, aux.adventurer.adv_id);
             fprintf(adventurer_csv, "%d;%d;%d;%d\n", 
-                aux->adventurer->adv_id, aux->adventurer->stats->s_id, aux->adventurer->moves->m_id, aux->adventurer->equipment->e_id);
+                aux.adventurer.adv_id, aux.adventurer.stats.s_id, aux.adventurer.moves.m_id, aux.adventurer.equipment.e_id);
             fprintf(stats_csv, "%d;%s;%s;%d;%lf;%d;%d;%d;%d\n",
-                aux->adventurer->stats->s_id, aux->adventurer->stats->name, aux->adventurer->stats->class, aux->adventurer->stats->lvl,
-                aux->adventurer->stats->exp, aux->adventurer->stats->max_hp, aux->adventurer->stats->max_mana, 
-                aux->adventurer->stats->physical_dmg, aux->adventurer->stats->magic_dmg);
+                aux.adventurer.stats.s_id, aux.adventurer.stats.name, aux.adventurer.stats.class, aux.adventurer.stats.lvl,
+                aux.adventurer.stats.exp, aux.adventurer.stats.max_hp, aux.adventurer.stats.max_mana, 
+                aux.adventurer.stats.physical_dmg, aux.adventurer.stats.magic_dmg);
             fprintf(moves_csv, "%d;%d;%d;%d;%d\n", 
-                aux->adventurer->moves->m_id, aux->adventurer->moves->move1_id, aux->adventurer->moves->move2_id, 
-                aux->adventurer->moves->move3_id, aux->adventurer->moves->move4_id);
+                aux.adventurer.moves.m_id, aux.adventurer.moves.move1_id, aux.adventurer.moves.move2_id, 
+                aux.adventurer.moves.move3_id, aux.adventurer.moves.move4_id);
             fprintf(equipment_csv, "%d;%d;%d;%d;%d;%d\n", 
-                aux->adventurer->equipment->e_id, aux->adventurer->equipment->h_s->h_id, aux->adventurer->equipment->c_s->c_id, 
-                aux->adventurer->equipment->a_s->a_id, aux->adventurer->equipment->b_s->b_id, aux->adventurer->equipment->w_s->w_id);
+                aux.adventurer.equipment.e_id, aux.adventurer.equipment.h_s.h_id, aux.adventurer.equipment.c_s.c_id, 
+                aux.adventurer.equipment.a_s.a_id, aux.adventurer.equipment.b_s.b_id, aux.adventurer.equipment.w_s.w_id);
             fprintf(helmet_csv, "%d;%s;%d;%lf;%d\n",
-                aux->adventurer->equipment->h_s->h_id, aux->adventurer->equipment->h_s->name, aux->adventurer->equipment->h_s->lvl,
-                aux->adventurer->equipment->h_s->exp, aux->adventurer->equipment->h_s->defense);
+                aux.adventurer.equipment.h_s.h_id, aux.adventurer.equipment.h_s.name, aux.adventurer.equipment.h_s.lvl,
+                aux.adventurer.equipment.h_s.exp, aux.adventurer.equipment.h_s.defense);
             fprintf(chesplate_csv, "%d;%s;%d;%lf;%d\n",
-                aux->adventurer->equipment->c_s->c_id, aux->adventurer->equipment->c_s->name, aux->adventurer->equipment->c_s->lvl,
-                aux->adventurer->equipment->c_s->exp, aux->adventurer->equipment->c_s->defense);
+                aux.adventurer.equipment.c_s.c_id, aux.adventurer.equipment.c_s.name, aux.adventurer.equipment.c_s.lvl,
+                aux.adventurer.equipment.c_s.exp, aux.adventurer.equipment.c_s.defense);
             fprintf(armlet_csv, "%d;%s;%d;%lf;%d\n",
-                aux->adventurer->equipment->a_s->a_id, aux->adventurer->equipment->a_s->name, aux->adventurer->equipment->a_s->lvl,
-                aux->adventurer->equipment->a_s->exp, aux->adventurer->equipment->a_s->defense);
+                aux.adventurer.equipment.a_s.a_id, aux.adventurer.equipment.a_s.name, aux.adventurer.equipment.a_s.lvl,
+                aux.adventurer.equipment.a_s.exp, aux.adventurer.equipment.a_s.defense);
             fprintf(boots_csv, "%d;%s;%d;%lf;%d\n",
-                aux->adventurer->equipment->b_s->b_id, aux->adventurer->equipment->b_s->name, aux->adventurer->equipment->b_s->lvl,
-                aux->adventurer->equipment->b_s->exp, aux->adventurer->equipment->b_s->defense);
+                aux.adventurer.equipment.b_s.b_id, aux.adventurer.equipment.b_s.name, aux.adventurer.equipment.b_s.lvl,
+                aux.adventurer.equipment.b_s.exp, aux.adventurer.equipment.b_s.defense);
             fprintf(weapon_csv, "%d;%s;%d;%lf;%d;%d\n",
-                aux->adventurer->equipment->w_s->w_id, aux->adventurer->equipment->w_s->name, aux->adventurer->equipment->w_s->lvl,
-                aux->adventurer->equipment->w_s->exp, aux->adventurer->equipment->w_s->physical_dmg, aux->adventurer->equipment->w_s->magic_dmg);
+                aux.adventurer.equipment.w_s.w_id, aux.adventurer.equipment.w_s.name, aux.adventurer.equipment.w_s.lvl,
+                aux.adventurer.equipment.w_s.exp, aux.adventurer.equipment.w_s.physical_dmg, aux.adventurer.equipment.w_s.magic_dmg);
         }
         fclose(userinfo_csv); fclose(adventurer_csv); fclose(stats_csv); fclose(moves_csv); fclose(equipment_csv); 
         fclose(helmet_csv); fclose(chesplate_csv); fclose(armlet_csv); fclose(boots_csv); fclose(weapon_csv);
@@ -292,17 +236,6 @@ void* db_backup(void* arg) {
         sleep(90); if(!(*server)) break;
         sleep(90); if(!(*server)) break;
     }
-    
-    free(aux->adventurer->equipment->h_s);
-    free(aux->adventurer->equipment->c_s);
-    free(aux->adventurer->equipment->a_s);
-    free(aux->adventurer->equipment->b_s);
-    free(aux->adventurer->equipment->w_s);
-    free(aux->adventurer->equipment);
-    free(aux->adventurer->moves);
-    free(aux->adventurer->stats);
-    free(aux->adventurer);
-    free(aux);
 
     return NULL;
 } 

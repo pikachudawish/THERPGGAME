@@ -6,6 +6,7 @@
 #include <time.h>
 #include <sys/socket.h>
 
+#include "../../enums.h"
 #include "../../hdrs/hdrs_aux/globalvariables.h"
 #include "../../hdrs/hdrs_structs/structs_adv.h"
 #include "../../hdrs/hdrs_structs/structs_server.h"

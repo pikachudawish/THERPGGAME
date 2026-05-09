@@ -25,8 +25,9 @@ int main() {
         mysql_close(conn);
         return 1;
     }
-    if(mysql_real_connect(conn, HOST, USER, PASS, DBNAME, 3306, NULL, 0) == NULL) {
+    if(!mysql_real_connect(conn, HOST, USER, PASS, DBNAME, 3306, NULL, 0)) {
         mysql_close(conn);
+        fprintf(stderr, "[ERROR] Couldn't establish a connection with the DataBase");
         return 1;
     }
 
